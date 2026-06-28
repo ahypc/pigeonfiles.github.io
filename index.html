@@ -11,6 +11,21 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0e0e0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f5d742;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #eab308;
+        }
+
         body {
             background: #0e0e0a;
             min-height: 100dvh;
@@ -21,6 +36,7 @@
             position: relative;
             overflow-x: hidden;
         }
+
         .bg-grid {
             position: fixed;
             inset: 0;
@@ -31,6 +47,7 @@
             z-index: 0;
             pointer-events: none;
         }
+
         .blob1 {
             position: fixed;
             width: 600px;
@@ -71,6 +88,7 @@
             z-index: 0;
             pointer-events: none;
         }
+
         @keyframes floatBlob {
             0% { transform: translate(0, 0) scale(1); }
             100% { transform: translate(80px, 60px) scale(1.2); }
@@ -78,6 +96,33 @@
         @keyframes pulseBlob {
             0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.4; }
             100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.9; }
+        }
+
+        /* загрузка */
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: #0e0e0a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .loader-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255, 215, 0, 0.1);
+            border-top-color: #f5d742;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         .app {
@@ -95,11 +140,12 @@
             min-height: 90dvh;
             display: flex;
             flex-direction: column;
-            animation: appIn 0.6s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: appIn 0.6s ease 0.8s forwards;
         }
         @keyframes appIn {
-            0% { opacity: 0; transform: scale(0.96) translateY(20px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .header {
@@ -109,11 +155,6 @@
             margin-bottom: 24px;
             padding-bottom: 12px;
             border-bottom: 1px solid rgba(255,215,0,0.06);
-            animation: slideDown 0.5s ease;
-        }
-        @keyframes slideDown {
-            0% { opacity: 0; transform: translateY(-10px); }
-            100% { opacity: 1; transform: translateY(0); }
         }
         .header h1 {
             font-size: 24px;
@@ -175,6 +216,7 @@
             0% { background-position: 0% 50%; }
             100% { background-position: 100% 50%; }
         }
+
         .sub-desc {
             font-size: 15px;
             color: rgba(255,255,255,0.35);
@@ -339,11 +381,6 @@
             max-width: 480px;
             margin: 0 auto;
             border-radius: 30px 30px 0 0;
-            animation: navIn 0.6s ease;
-        }
-        @keyframes navIn {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
         }
         .nav-item {
             display: flex;
@@ -434,12 +471,45 @@
             50% { opacity: 0.5; }
         }
 
-        .glow-text {
-            color: rgba(255,215,0,0.05);
-            text-align: center;
+        .updates {
+            margin-top: 20px;
+            padding: 16px;
+            background: rgba(255,215,0,0.02);
+            border: 1px solid rgba(255,215,0,0.04);
+            border-radius: 20px;
+        }
+        .updates-title {
             font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: rgba(255,255,255,0.08);
+            margin-bottom: 10px;
+        }
+        .update-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,215,0,0.02);
+            font-size: 13px;
+            color: rgba(255,255,255,0.2);
+        }
+        .update-item:last-child {
+            border-bottom: none;
+        }
+        .update-item .label {
+            color: rgba(255,215,0,0.3);
+        }
+        .update-item .date {
+            font-size: 11px;
+            color: rgba(255,255,255,0.06);
+        }
+
+        .counter {
             margin-top: 12px;
-            letter-spacing: 0.3px;
+            text-align: center;
+            font-size: 11px;
+            color: rgba(255,255,255,0.04);
         }
 
         @media (max-width: 480px) {
@@ -481,17 +551,24 @@
 </head>
 <body>
 
+    <!-- загрузка -->
+    <div class="loader" id="loader">
+        <div class="loader-spinner"></div>
+    </div>
+
+    <!-- фон -->
     <div class="bg-grid"></div>
     <div class="blob1"></div>
     <div class="blob2"></div>
     <div class="blob3"></div>
 
-    <div class="app">
+    <div class="app" id="app">
         <div class="header">
             <h1>Pigeon<span>Files</span></h1>
             <span class="header-badge">Prompts</span>
         </div>
 
+        <!-- главная -->
         <div id="pageMenu" class="page active">
             <div class="badge-gold">Архив Промтов</div>
             <div class="main-title">
@@ -507,15 +584,40 @@
                     Без воды, без цензуры, без ограничений.
                 </p>
             </div>
+
             <a href="https://t.me/+OUj2v5aFnmgyNDQ6" target="_blank" class="btn-gold" id="channelBtn">
                 <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13h-2v6l5.25 3.15L17 12.23l-4-2.37V7z"/></svg>
                 Перейти в канал
             </a>
+
+            <!-- последние обновления -->
+            <div class="updates">
+                <div class="updates-title">Последние обновления</div>
+                <div class="update-item">
+                    <span class="label">Добавлен промт для Grok</span>
+                    <span class="date">Сегодня</span>
+                </div>
+                <div class="update-item">
+                    <span class="label">Обновлён байпасс для DeepSeek</span>
+                    <span class="date">Вчера</span>
+                </div>
+                <div class="update-item">
+                    <span class="label">Новый скрипт для Gemini</span>
+                    <span class="date">2 дня назад</span>
+                </div>
+            </div>
+
+            <!-- счётчик -->
+            <div class="counter">
+                👁️ <span id="visitorCount">0</span> просмотров
+            </div>
+
             <div class="footer-note">
                 <a href="#">PigeonFiles</a> · Промты без цензуры
             </div>
         </div>
 
+        <!-- команда -->
         <div id="pageTeam" class="page">
             <div class="badge-gold">Команда</div>
             <div class="main-title" style="font-size:28px;">
@@ -552,6 +654,7 @@
             </div>
         </div>
 
+        <!-- навигация -->
         <div class="bottom-nav">
             <button class="nav-item active" data-page="pageMenu" id="navMenu">
                 <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -566,6 +669,7 @@
 
     <script>
         (function() {
+            // звуки
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
             function playSound(type) {
@@ -576,59 +680,88 @@
                     gain.connect(audioCtx.destination);
 
                     if (type === 'click') {
-                        osc.frequency.value = 600;
+                        osc.frequency.value = 700;
                         osc.type = 'sine';
                         gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
                         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.06);
                         osc.start(audioCtx.currentTime);
                         osc.stop(audioCtx.currentTime + 0.06);
                     } else if (type === 'switch') {
-                        osc.frequency.value = 450;
+                        osc.frequency.value = 500;
                         osc.type = 'sine';
-                        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-                        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
                         osc.start(audioCtx.currentTime);
-                        osc.stop(audioCtx.currentTime + 0.1);
-                        
-                        const osc2 = audioCtx.createOscillator();
-                        const gain2 = audioCtx.createGain();
-                        osc2.connect(gain2);
-                        gain2.connect(audioCtx.destination);
-                        osc2.frequency.value = 650;
-                        osc2.type = 'sine';
-                        gain2.gain.setValueAtTime(0.03, audioCtx.currentTime + 0.05);
-                        gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
-                        osc2.start(audioCtx.currentTime + 0.05);
-                        osc2.stop(audioCtx.currentTime + 0.12);
+                        osc.stop(audioCtx.currentTime + 0.08);
+                        setTimeout(() => {
+                            const osc2 = audioCtx.createOscillator();
+                            const gain2 = audioCtx.createGain();
+                            osc2.connect(gain2);
+                            gain2.connect(audioCtx.destination);
+                            osc2.frequency.value = 750;
+                            osc2.type = 'sine';
+                            gain2.gain.setValueAtTime(0.04, audioCtx.currentTime + 0.05);
+                            gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                            osc2.start(audioCtx.currentTime + 0.05);
+                            osc2.stop(audioCtx.currentTime + 0.1);
+                        }, 50);
                     } else if (type === 'hover') {
-                        osc.frequency.value = 900;
+                        osc.frequency.value = 1000;
                         osc.type = 'sine';
                         gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
                         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
                         osc.start(audioCtx.currentTime);
                         osc.stop(audioCtx.currentTime + 0.03);
+                    } else if (type === 'load') {
+                        osc.frequency.value = 450;
+                        osc.type = 'sine';
+                        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+                        osc.start(audioCtx.currentTime);
+                        osc.stop(audioCtx.currentTime + 0.15);
+                        setTimeout(() => {
+                            const osc2 = audioCtx.createOscillator();
+                            const gain2 = audioCtx.createGain();
+                            osc2.connect(gain2);
+                            gain2.connect(audioCtx.destination);
+                            osc2.frequency.value = 800;
+                            osc2.type = 'sine';
+                            gain2.gain.setValueAtTime(0.03, audioCtx.currentTime + 0.1);
+                            gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+                            osc2.start(audioCtx.currentTime + 0.1);
+                            osc2.stop(audioCtx.currentTime + 0.18);
+                        }, 80);
                     }
                 } catch (_) {}
             }
 
+            // загрузка
+            window.addEventListener('load', function() {
+                setTimeout(() => {
+                    document.getElementById('loader').classList.add('hidden');
+                    playSound('load');
+                }, 700);
+            });
+
+            // счётчик (локальный)
+            let count = parseInt(localStorage.getItem('pigeonCounter')) || 0;
+            count++;
+            localStorage.setItem('pigeonCounter', count);
+            document.getElementById('visitorCount').textContent = count;
+
+            // переключение вкладок
             function switchPage(pageId) {
                 playSound('switch');
-                
-                document.querySelectorAll('.page').forEach(p => {
-                    p.classList.remove('active');
-                });
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
                 const target = document.getElementById(pageId);
-                if (target) {
-                    target.classList.add('active');
-                }
-
+                if (target) target.classList.add('active');
                 document.querySelectorAll('.nav-item').forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.page === pageId);
                 });
             }
 
             document.querySelectorAll('.nav-item').forEach(btn => {
-                btn.addEventListener('click', function(e) {
+                btn.addEventListener('click', function() {
                     const pageId = this.dataset.page;
                     if (!document.getElementById(pageId).classList.contains('active')) {
                         switchPage(pageId);
@@ -638,6 +771,7 @@
                 });
             });
 
+            // клики
             document.querySelectorAll('.btn-gold, .team-name a, .footer-note a, .header-badge, .team-row, .card-banner').forEach(el => {
                 el.addEventListener('click', function(e) {
                     if (!this.href || this.href.startsWith('#')) {
@@ -652,12 +786,7 @@
                 });
             });
 
-            document.querySelectorAll('.team-row').forEach(el => {
-                el.addEventListener('click', function() {
-                    playSound('click');
-                });
-            });
-
+            // канал
             const channelBtn = document.getElementById('channelBtn');
             if (channelBtn) {
                 channelBtn.addEventListener('click', function(e) {
