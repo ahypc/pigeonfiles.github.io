@@ -1,866 +1,402 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>PigeonFiles — архив промтов</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PigeonFiles | Архив промтов</title>
     <style>
+        :root {
+            --bg: #0b0b0b;
+            --accent: #f5d742;
+            --text: #ffffff;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --blur: 20px;
+        }
+
+        .theme-lime { --accent: #8fdb8f; }
+        .theme-yellow { --accent: #f5d742; }
+        .theme-blue { --accent: #6b8fff; }
+        .theme-pink { --accent: #ff7eb3; }
+        .theme-purple { --accent: #a78bfa; }
+        .theme-black { --accent: #555555; --text: #666666; }
+
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: #0b0b0b;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-            padding-bottom: 100px;
-            transition: background 0.4s ease, color 0.4s ease;
-            color: #f0f0f0;
-            position: relative;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
             overflow-x: hidden;
+            min-height: 100vh;
+            transition: color 0.3s ease;
         }
 
-        .stars {
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+        #stars {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
             pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
         }
 
         .star {
             position: absolute;
-            width: 2px;
-            height: 2px;
-            background: rgba(255,255,255,0.2);
+            background: white;
             border-radius: 50%;
-            animation: twinkle var(--duration) ease-in-out infinite alternate;
+            animation: twinkle linear infinite;
         }
 
         @keyframes twinkle {
-            0% { opacity: 0.1; transform: scale(0.8); }
-            100% { opacity: 0.8; transform: scale(1.2); }
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.8; }
         }
 
-        .app {
-            max-width: 680px;
-            width: 100%;
-            position: relative;
-            z-index: 1;
-            transition: background 0.4s ease, border-color 0.4s ease;
-            color: inherit;
+        .top-nav {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            background: rgba(11,11,11,0.5);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .nav-item {
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            opacity: 0.5;
+        }
+
+        .nav-item.active { opacity: 1; color: var(--accent); }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 20px 20px 100px;
         }
 
         .page {
             display: none;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.3s ease forwards;
         }
-        .page.active {
-            display: block;
-        }
+
+        .page.active { display: block; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
-            to   { opacity: 1; transform: translateY(0); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .header {
+        h1 { font-size: 38px; font-weight: 800; color: var(--accent); margin-bottom: 5px; }
+        .sub { font-size: 18px; opacity: 0.7; margin-bottom: 20px; }
+        .desc { line-height: 1.6; opacity: 0.9; margin-bottom: 30px; font-size: 15px; }
+
+        .tg-btn {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 16px 0 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            margin-bottom: 24px;
-            flex-wrap: wrap;
+            justify-content: center;
             gap: 10px;
-            color: inherit;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            transition: color 0.3s ease;
-            color: inherit;
-        }
-
-        .logo small {
-            font-weight: 300;
-            font-size: 14px;
-            opacity: 0.3;
-            margin-left: 6px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            font-size: 13px;
-            padding: 4px 0;
-            border-bottom: 1px solid transparent;
-            cursor: pointer;
-            transition: color 0.3s ease, border-color 0.3s ease;
-            color: rgba(255,255,255,0.4);
-        }
-
-        .nav-links a:hover,
-        .nav-links a.active {
-            border-bottom-color: currentColor;
-            color: inherit;
-        }
-
-        .promo {
-            background: rgba(255,255,255,0.01);
-            border: 1px solid rgba(255,255,255,0.03);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .promo h3 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: inherit;
-        }
-
-        .promo p {
-            font-size: 14px;
-            opacity: 0.5;
-            line-height: 1.6;
-            color: inherit;
-        }
-
-        .promo .btn {
-            margin-top: 12px;
-        }
-
-        .btn {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.04);
-            padding: 8px 24px;
+            background: var(--accent);
+            color: #000;
+            padding: 16px;
             border-radius: 100px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
             text-decoration: none;
-            color: rgba(255,255,255,0.4);
+            font-weight: 700;
+            transition: 0.3s;
+            margin-bottom: 40px;
         }
 
-        .btn svg {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
+        .tg-btn:hover { transform: scale(1.04); }
+        .tg-btn:active { transform: scale(0.94); }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 40px;
         }
 
-        .btn:hover {
-            transform: scale(1.04);
-            border-color: currentColor;
-            color: inherit;
-        }
-        .btn:active {
-            transform: scale(0.94);
-        }
-
-        .btn-primary {
-            background: rgba(255,215,0,0.06);
-            border-color: rgba(255,215,0,0.08);
-            color: #f5d742;
-        }
-
-        .btn-primary:hover {
-            background: rgba(255,215,0,0.12);
-            border-color: rgba(255,215,0,0.15);
-        }
-
-        .stats-row {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-        }
-
-        .stat-box {
-            background: rgba(255,255,255,0.01);
-            border: 1px solid rgba(255,255,255,0.03);
-            border-radius: 16px;
-            padding: 12px 18px;
-            flex: 1;
-            min-width: 100px;
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 20px;
             text-align: center;
         }
 
-        .stat-box .number {
-            font-size: 22px;
-            font-weight: 700;
-            color: inherit;
-        }
-
-        .stat-box .label {
-            font-size: 11px;
-            opacity: 0.3;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: inherit;
-        }
-
-        .updates {
-            background: rgba(255,255,255,0.01);
-            border: 1px solid rgba(255,255,255,0.03);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .updates-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            opacity: 0.4;
-            color: inherit;
-        }
+        .stat-num { display: block; font-size: 28px; font-weight: 800; color: var(--accent); }
+        .stat-label { font-size: 12px; opacity: 0.5; text-transform: uppercase; }
 
         .update-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.02);
-            font-size: 13px;
-            color: inherit;
-        }
-
-        .update-item:last-child {
-            border-bottom: none;
-        }
-
-        .update-item .label {
-            opacity: 0.6;
-            color: inherit;
-        }
-
-        .update-item .date {
-            font-size: 11px;
-            opacity: 0.2;
-            color: inherit;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%) scale(0.8);
-            background: rgba(11,11,11,0.92);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 100px;
-            padding: 10px 24px;
-            font-size: 13px;
-            opacity: 0;
-            transition: all 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1);
-            pointer-events: none;
-            z-index: 200;
-            white-space: nowrap;
-            color: rgba(255,255,255,0.6);
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) scale(1);
-        }
-
-        .team-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 12px;
-            color: inherit;
-        }
-
-        .team-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            background: rgba(255,255,255,0.01);
-            border: 1px solid rgba(255,255,255,0.03);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 15px 20px;
             border-radius: 16px;
-            transition: all 0.3s ease;
-            cursor: default;
-            color: inherit;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .team-row:hover {
-            background: rgba(255,255,255,0.02);
-            transform: translateX(4px);
-        }
+        .update-item span:last-child { opacity: 0.4; font-size: 12px; }
 
-        .team-row .role {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            opacity: 0.3;
-            color: inherit;
-        }
-
-        .team-row .name a {
+        .team-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 18px;
+            border-radius: 16px;
+            margin-bottom: 12px;
             text-decoration: none;
-            transition: 0.2s;
             color: inherit;
+            transition: 0.3s;
         }
 
-        .team-row .name a:hover {
-            text-decoration: underline;
-            opacity: 0.8;
-        }
+        .team-link:hover { transform: translateX(10px); background: rgba(255,255,255,0.1); }
+        .team-link b { color: var(--accent); }
 
-        .settings-grid {
-            display: flex;
-            flex-direction: column;
+        .theme-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
-            margin-top: 12px;
-            color: inherit;
         }
 
-        .theme-option {
+        .theme-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 15px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 12px 16px;
-            background: rgba(255,255,255,0.01);
-            border: 1px solid rgba(255,255,255,0.03);
-            border-radius: 16px;
+            gap: 12px;
             cursor: pointer;
-            transition: all 0.25s ease;
-            color: inherit;
+            transition: 0.2s;
         }
 
-        .theme-option:hover {
-            background: rgba(255,255,255,0.02);
-            transform: translateX(4px);
-        }
+        .theme-card.active { border-color: var(--accent); background: rgba(255,255,255,0.1); }
 
-        .theme-option .circle {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.04);
-            flex-shrink: 0;
-            transition: border-color 0.3s ease;
-        }
-
-        .theme-option .label {
-            font-size: 14px;
-            opacity: 0.6;
-            color: inherit;
-        }
-
-        .theme-option.active .circle {
-            border-color: currentColor;
-            box-shadow: 0 0 0 2px rgba(255,255,255,0.02);
-        }
-
-        .theme-option.active .label {
-            opacity: 1;
-            color: inherit;
-        }
+        .color-dot { width: 16px; height: 16px; border-radius: 50%; }
 
         .bottom-nav {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            max-width: 680px;
-            margin: 0 auto;
-            background: rgba(11,11,11,0.92);
-            backdrop-filter: blur(24px);
-            border-top: 1px solid rgba(255,255,255,0.02);
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
             display: flex;
             justify-content: space-around;
-            padding: 10px 0 14px;
-            z-index: 100;
+            padding: 15px;
+            z-index: 1000;
         }
 
-        .bottom-nav a {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            text-decoration: none;
-            font-size: 9px;
-            letter-spacing: 0.3px;
-            transition: all 0.3s ease;
-            padding: 2px 12px;
-            text-transform: uppercase;
+        .b-nav-item {
             cursor: pointer;
-            opacity: 0.2;
-            color: inherit;
+            transition: 0.3s;
+            opacity: 0.4;
+            color: var(--text);
         }
 
-        .bottom-nav a svg {
-            width: 22px;
-            height: 22px;
-            fill: currentColor;
-            transition: all 0.3s ease;
+        .b-nav-item.active { opacity: 1; color: var(--accent); }
+
+        svg { width: 24px; height: 24px; fill: currentColor; }
+
+        #toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: #000;
+            padding: 10px 24px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 14px;
+            display: none;
+            z-index: 2000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .bottom-nav a.active {
-            opacity: 1;
-            color: inherit;
+        footer { text-align: center; padding: 40px 0; font-size: 12px; opacity: 0.4; }
+        footer a { color: inherit; }
+
+        @media (min-width: 641px) {
+            .bottom-nav { display: none; }
         }
-
-        .bottom-nav a:hover {
-            opacity: 0.6;
-        }
-        .bottom-nav a:active {
-            transform: scale(0.88);
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding: 16px 0;
-            border-top: 1px solid rgba(255,255,255,0.02);
-            font-size: 12px;
-            opacity: 0.2;
-            color: inherit;
-        }
-
-        .footer a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        h2 {
-            color: inherit;
-        }
-
-        .theme-lime body { background: #0a1a0a; color: #b0f0b0; }
-        .theme-lime .logo { color: #8fdb8f; }
-        .theme-lime .btn-primary { color: #8fdb8f; border-color: rgba(100, 200, 100, 0.08); }
-        .theme-lime .btn-primary:hover { background: rgba(100, 200, 100, 0.12); }
-        .theme-lime .updates { border-color: rgba(100, 200, 100, 0.05); }
-        .theme-lime .update-item { border-color: rgba(100, 200, 100, 0.03); }
-        .theme-lime .btn:hover { color: #8fdb8f; border-color: #8fdb8f; }
-        .theme-lime .nav-links a:hover,
-        .theme-lime .nav-links a.active { color: #8fdb8f; }
-        .theme-lime .bottom-nav a.active { color: #8fdb8f; }
-        .theme-lime .team-row .name a { color: #8fdb8f; }
-        .theme-lime .theme-option .circle { border-color: rgba(100, 200, 100, 0.1); }
-        .theme-lime .theme-option.active .circle { border-color: #8fdb8f; }
-        .theme-lime .theme-option.active .label { color: #8fdb8f; }
-
-        .theme-yellow body { background: #1a1a0a; color: #f0e6b0; }
-        .theme-yellow .logo { color: #f5d742; }
-        .theme-yellow .btn-primary { color: #f5d742; border-color: rgba(200, 200, 100, 0.08); }
-        .theme-yellow .btn-primary:hover { background: rgba(200, 200, 100, 0.12); }
-        .theme-yellow .updates { border-color: rgba(200, 200, 100, 0.05); }
-        .theme-yellow .update-item { border-color: rgba(200, 200, 100, 0.03); }
-        .theme-yellow .btn:hover { color: #f5d742; border-color: #f5d742; }
-        .theme-yellow .nav-links a:hover,
-        .theme-yellow .nav-links a.active { color: #f5d742; }
-        .theme-yellow .bottom-nav a.active { color: #f5d742; }
-        .theme-yellow .team-row .name a { color: #f5d742; }
-        .theme-yellow .theme-option .circle { border-color: rgba(200, 200, 100, 0.1); }
-        .theme-yellow .theme-option.active .circle { border-color: #f5d742; }
-        .theme-yellow .theme-option.active .label { color: #f5d742; }
-
-        .theme-blue body { background: #0a0a1a; color: #b0c0f0; }
-        .theme-blue .logo { color: #6b8fff; }
-        .theme-blue .btn-primary { color: #6b8fff; border-color: rgba(100, 150, 255, 0.08); }
-        .theme-blue .btn-primary:hover { background: rgba(100, 150, 255, 0.12); }
-        .theme-blue .updates { border-color: rgba(100, 150, 255, 0.05); }
-        .theme-blue .update-item { border-color: rgba(100, 150, 255, 0.03); }
-        .theme-blue .btn:hover { color: #6b8fff; border-color: #6b8fff; }
-        .theme-blue .nav-links a:hover,
-        .theme-blue .nav-links a.active { color: #6b8fff; }
-        .theme-blue .bottom-nav a.active { color: #6b8fff; }
-        .theme-blue .team-row .name a { color: #6b8fff; }
-        .theme-blue .theme-option .circle { border-color: rgba(100, 150, 255, 0.1); }
-        .theme-blue .theme-option.active .circle { border-color: #6b8fff; }
-        .theme-blue .theme-option.active .label { color: #6b8fff; }
-
-        .theme-pink body { background: #1a0a12; color: #f0b0d0; }
-        .theme-pink .logo { color: #ff7eb3; }
-        .theme-pink .btn-primary { color: #ff7eb3; border-color: rgba(255, 120, 180, 0.08); }
-        .theme-pink .btn-primary:hover { background: rgba(255, 120, 180, 0.12); }
-        .theme-pink .updates { border-color: rgba(255, 120, 180, 0.05); }
-        .theme-pink .update-item { border-color: rgba(255, 120, 180, 0.03); }
-        .theme-pink .btn:hover { color: #ff7eb3; border-color: #ff7eb3; }
-        .theme-pink .nav-links a:hover,
-        .theme-pink .nav-links a.active { color: #ff7eb3; }
-        .theme-pink .bottom-nav a.active { color: #ff7eb3; }
-        .theme-pink .team-row .name a { color: #ff7eb3; }
-        .theme-pink .theme-option .circle { border-color: rgba(255, 120, 180, 0.1); }
-        .theme-pink .theme-option.active .circle { border-color: #ff7eb3; }
-        .theme-pink .theme-option.active .label { color: #ff7eb3; }
-
-        .theme-purple body { background: #0f0a1a; color: #c8b0f0; }
-        .theme-purple .logo { color: #a78bfa; }
-        .theme-purple .btn-primary { color: #a78bfa; border-color: rgba(160, 120, 255, 0.08); }
-        .theme-purple .btn-primary:hover { background: rgba(160, 120, 255, 0.12); }
-        .theme-purple .updates { border-color: rgba(160, 120, 255, 0.05); }
-        .theme-purple .update-item { border-color: rgba(160, 120, 255, 0.03); }
-        .theme-purple .btn:hover { color: #a78bfa; border-color: #a78bfa; }
-        .theme-purple .nav-links a:hover,
-        .theme-purple .nav-links a.active { color: #a78bfa; }
-        .theme-purple .bottom-nav a.active { color: #a78bfa; }
-        .theme-purple .team-row .name a { color: #a78bfa; }
-        .theme-purple .theme-option .circle { border-color: rgba(160, 120, 255, 0.1); }
-        .theme-purple .theme-option.active .circle { border-color: #a78bfa; }
-        .theme-purple .theme-option.active .label { color: #a78bfa; }
-
-        .theme-black body { background: #000000; color: #666666; }
-        .theme-black .logo { color: #cccccc; }
-        .theme-black .btn-primary { color: #cccccc; border-color: rgba(255,255,255,0.04); }
-        .theme-black .btn-primary:hover { background: rgba(255,255,255,0.04); }
-        .theme-black .updates { border-color: rgba(255,255,255,0.02); }
-        .theme-black .update-item { border-color: rgba(255,255,255,0.01); }
-        .theme-black .btn:hover { color: #cccccc; border-color: #cccccc; }
-        .theme-black .nav-links a:hover,
-        .theme-black .nav-links a.active { color: #cccccc; }
-        .theme-black .bottom-nav a.active { color: #cccccc; }
-        .theme-black .team-row .name a { color: #cccccc; }
-        .theme-black .theme-option .circle { border-color: rgba(255,255,255,0.05); }
-        .theme-black .theme-option.active .circle { border-color: #cccccc; }
-        .theme-black .theme-option.active .label { color: #cccccc; }
-
-        @media (max-width: 480px) {
-            body { padding: 12px; padding-bottom: 90px; }
-            .app { max-width: 100%; }
-            .logo { font-size: 22px; }
-            .header { flex-direction: column; align-items: stretch; gap: 12px; }
-            .nav-links { justify-content: flex-start; }
-            .bottom-nav a { font-size: 8px; }
-            .bottom-nav a svg { width: 20px; height: 20px; }
-            .toast { font-size: 12px; padding: 8px 18px; bottom: 80px; }
-            .stat-box .number { font-size: 18px; }
-        }
-
-        @media (min-width: 640px) {
-            body { padding-top: 30px; }
-            .bottom-nav { border-radius: 20px 20px 0 0; }
+        @media (max-width: 640px) {
+            .top-nav { display: none; }
         }
     </style>
 </head>
-<body>
+<body class="theme-yellow">
 
-<div class="stars" id="stars"></div>
+<div id="stars"></div>
 
-<div class="app" id="app">
-    <div class="header">
-        <div class="logo">
-            PigeonFiles
-            <small>archive</small>
-        </div>
-        <div class="nav-links">
-            <a class="active" data-page="home">Главная</a>
-            <a data-page="team">Команда</a>
-        </div>
-    </div>
+<nav class="top-nav">
+    <div class="nav-item active" onclick="showPage('main')">Главная</div>
+    <div class="nav-item" onclick="showPage('team')">Команда</div>
+</nav>
 
-    <div id="page-home" class="page active">
-        <div class="promo">
-            <h3>PigeonFiles — архив промтов</h3>
-            <p>
-                Только рабочие промты для Grok, DeepSeek, Gemini и других нейросетей.<br />
-                Без воды. Без ограничений.
-            </p>
-            <a href="https://t.me/+5bxeucovWGNjY2Fi" target="_blank" class="btn btn-primary">
-                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13h-2v6l5.25 3.15L17 12.23l-4-2.37V7z"/></svg>
-                Перейти в канал
-            </a>
-        </div>
-
-        <div class="stats-row">
-            <div class="stat-box">
-                <div class="number" id="visitorCount">0</div>
-                <div class="label">Пользователей</div>
-            </div>
-            <div class="stat-box">
-                <div class="number">294</div>
-                <div class="label">Подписчиков</div>
-            </div>
-        </div>
-
-        <div class="updates">
-            <div class="updates-title">Обновления</div>
-            <div class="update-item">
-                <span class="label">➕ Добавлены темы оформления</span>
-                <span class="date">Сегодня</span>
-            </div>
-            <div class="update-item">
-                <span class="label">🎨 6 цветовых тем</span>
-                <span class="date">Сегодня</span>
-            </div>
-            <div class="update-item">
-                <span class="label">🔧 Исправлен баг с текстом</span>
-                <span class="date">Сегодня</span>
-            </div>
-            <div class="update-item">
-                <span class="label">⚡ Добавлена вкладка настроек</span>
-                <span class="date">Вчера</span>
-            </div>
-        </div>
-
-        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:12px;">
-            <button class="btn btn-primary" id="shareBtn">
-                <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-                Поделиться
-            </button>
-        </div>
-
-        <div class="footer">
-            Разработчик — <a href="https://t.me/ahypc" target="_blank">@ahypc</a>
-        </div>
-    </div>
-
-    <div id="page-team" class="page">
-        <h2 style="margin-bottom: 16px;">Команда</h2>
-        <div class="team-grid">
-            <div class="team-row">
-                <span class="role">Овнер</span>
-                <span class="name"><a href="https://t.me/lowactiv" target="_blank">@lowactiv</a></span>
-            </div>
-            <div class="team-row">
-                <span class="role">Главный админ и кодер</span>
-                <span class="name"><a href="https://t.me/fuloxe" target="_blank">@fuloxe</a> <span style="opacity:0.05;font-size:11px;">реф</span></span>
-            </div>
-            <div class="team-row">
-                <span class="role">Админ</span>
-                <span class="name"><a href="https://t.me/SuprTuranov" target="_blank">@SuprTuranov</a> <span style="opacity:0.05;font-size:11px;">SuprTuran</span></span>
-            </div>
-            <div class="team-row">
-                <span class="role">Дизайнер, промптер</span>
-                <span class="name"><a href="https://t.me/ahypc" target="_blank">@ahypc</a></span>
-            </div>
-        </div>
-    </div>
-
-    <div id="page-settings" class="page">
-        <h2 style="margin-bottom: 16px;">Настройки</h2>
-        <div class="settings-grid" id="themeSelector">
-            <div class="theme-option" data-theme="lime">
-                <div class="circle" style="background:#8fdb8f;"></div>
-                <span class="label">Лаймовая</span>
-            </div>
-            <div class="theme-option active" data-theme="yellow">
-                <div class="circle" style="background:#f5d742;"></div>
-                <span class="label">Жёлтая</span>
-            </div>
-            <div class="theme-option" data-theme="blue">
-                <div class="circle" style="background:#6b8fff;"></div>
-                <span class="label">Синяя</span>
-            </div>
-            <div class="theme-option" data-theme="pink">
-                <div class="circle" style="background:#ff7eb3;"></div>
-                <span class="label">Розовая</span>
-            </div>
-            <div class="theme-option" data-theme="purple">
-                <div class="circle" style="background:#a78bfa;"></div>
-                <span class="label">Фиолетовая</span>
-            </div>
-            <div class="theme-option" data-theme="black">
-                <div class="circle" style="background:#555555;"></div>
-                <span class="label">Чёрная</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="bottom-nav">
-        <a class="active" data-page="home">
-            <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"/></svg>
-            Лента
+<div class="container">
+    <div id="main" class="page active">
+        <h1>PigeonFiles</h1>
+        <div class="sub">архив промтов для нейросетей</div>
+        <p class="desc">Только рабочие промты для Grok, DeepSeek, Gemini и других нейросетей. Без воды. Без ограничений.</p>
+        
+        <a href="https://t.me/+5bxeucovWGNjY2Fi" class="tg-btn" target="_blank" onclick="sndClick()">
+            <svg viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm4.43 7l-1.43 8.324c-.133.586-.482.729-.972.453l-2.185-1.611-1.054 1.015c-.116.117-.214.214-.439.214l.157-2.223 4.045-3.655c.176-.156-.038-.243-.273-.087l-5.001 3.149-2.155-.674c-.468-.146-.477-.468.098-.694l8.413-3.242c.389-.142.73.09.596.73z"/></svg>
+            Перейти в канал
         </a>
-        <a data-page="team">
-            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            Команда
-        </a>
-        <a data-page="settings">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            Настройки
-        </a>
+
+        <div class="stats">
+            <div class="card">
+                <span class="stat-num" id="userCount">293</span>
+                <span class="stat-label">Пользователей</span>
+            </div>
+            <div class="card">
+                <span class="stat-num">293</span>
+                <span class="stat-label">Подписчиков</span>
+            </div>
+        </div>
+
+        <h2 style="font-size: 20px; margin-bottom: 15px;">Обновления</h2>
+        <div class="update-item"><span>➕ Добавлены темы оформления</span><span>Сегодня</span></div>
+        <div class="update-item"><span>🎨 6 цветовых тем</span><span>Сегодня</span></div>
+        <div class="update-item"><span>🔧 Исправлен баг с текстом</span><span>Сегодня</span></div>
+        <div class="update-item"><span>⚡ Добавлена вкладка настроек</span><span>Вчера</span></div>
+
+        <footer>Разработчик — <a href="https://t.me/ahypc" target="_blank">@ahypc</a></footer>
     </div>
 
-    <div class="toast" id="toast"></div>
+    <div id="team" class="page">
+        <h1 style="margin-bottom: 20px;">Команда</h1>
+        <a href="https://t.me/lowactiv" class="team-link" onclick="sndClick()"><span>Овнер</span><b>@lowactiv</b></a>
+        <a href="https://t.me/fuloxe" class="team-link" onclick="sndClick()"><span>Главный админ и кодер</span><b>@fuloxe</b></a>
+        <a href="https://t.me/SuprTuranov" class="team-link" onclick="sndClick()"><span>Админ</span><b>@SuprTuranov</b></a>
+        <a href="https://t.me/ahypc" class="team-link" onclick="sndClick()"><span>Дизайнер, промптер</span><b>@ahypc</b></a>
+    </div>
+
+    <div id="settings" class="page">
+        <h1 style="margin-bottom: 20px;">Настройки</h1>
+        <div class="theme-list">
+            <div class="theme-card" onclick="setTheme('lime')"><div class="color-dot" style="background:#8fdb8f"></div>Лаймовая</div>
+            <div class="theme-card active" onclick="setTheme('yellow')"><div class="color-dot" style="background:#f5d742"></div>Жёлтая</div>
+            <div class="theme-card" onclick="setTheme('blue')"><div class="color-dot" style="background:#6b8fff"></div>Синяя</div>
+            <div class="theme-card" onclick="setTheme('pink')"><div class="color-dot" style="background:#ff7eb3"></div>Розовая</div>
+            <div class="theme-card" onclick="setTheme('purple')"><div class="color-dot" style="background:#a78bfa"></div>Фиолетовая</div>
+            <div class="theme-card" onclick="setTheme('black')"><div class="color-dot" style="background:#555555"></div>Чёрная</div>
+        </div>
+    </div>
 </div>
 
+<nav class="bottom-nav">
+    <div class="b-nav-item active" id="b-main" onclick="showPage('main')">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    </div>
+    <div class="b-nav-item" id="b-team" onclick="showPage('team')">
+        <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+    </div>
+    <div class="b-nav-item" id="b-settings" onclick="showPage('settings')">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+    </div>
+</nav>
+
+<div id="toast"></div>
+
 <script>
-    (function() {
-        var starsContainer = document.getElementById('stars');
-        for (var i = 0; i < 120; i++) {
-            var star = document.createElement('div');
-            star.className = 'star';
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.setProperty('--duration', (2 + Math.random() * 3) + 's');
-            star.style.width = (1 + Math.random() * 2) + 'px';
-            star.style.height = star.style.width;
-            starsContainer.appendChild(star);
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    function playTone(freq, dur, vol, del = 0) {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + del);
+        g.gain.setValueAtTime(vol, ctx.currentTime + del);
+        g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + del + dur);
+        osc.connect(g); g.connect(ctx.destination);
+        osc.start(ctx.currentTime + del); osc.stop(ctx.currentTime + del + dur);
+    }
+    const sndClick = () => playTone(600, 0.08, 0.25);
+    const sndTab = () => { playTone(500, 0.1, 0.2); playTone(750, 0.1, 0.2, 0.05); };
+    const sndLoad = () => { playTone(400, 0.15, 0.2); playTone(800, 0.15, 0.2, 0.1); };
+
+    function initStars() {
+        const s = document.getElementById('stars');
+        for(let i=0; i<120; i++) {
+            const div = document.createElement('div');
+            div.className = 'star';
+            const size = Math.random() * 2 + 1;
+            div.style.width = size + 'px';
+            div.style.height = size + 'px';
+            div.style.left = Math.random() * 100 + '%';
+            div.style.top = Math.random() * 100 + '%';
+            div.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            div.style.animationDelay = Math.random() * 5 + 's';
+            s.appendChild(div);
         }
+    }
 
-        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        function playSound(type) {
-            try {
-                var osc = audioCtx.createOscillator();
-                var gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-
-                if (type === 'click') {
-                    osc.frequency.value = 600;
-                    osc.type = 'sine';
-                    gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
-                    osc.start(audioCtx.currentTime);
-                    osc.stop(audioCtx.currentTime + 0.08);
-                } else if (type === 'switch') {
-                    osc.frequency.value = 500;
-                    osc.type = 'sine';
-                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-                    osc.start(audioCtx.currentTime);
-                    osc.stop(audioCtx.currentTime + 0.1);
-                    setTimeout(function() {
-                        var osc2 = audioCtx.createOscillator();
-                        var gain2 = audioCtx.createGain();
-                        osc2.connect(gain2);
-                        gain2.connect(audioCtx.destination);
-                        osc2.frequency.value = 750;
-                        osc2.type = 'sine';
-                        gain2.gain.setValueAtTime(0.15, audioCtx.currentTime + 0.06);
-                        gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.14);
-                        osc2.start(audioCtx.currentTime + 0.06);
-                        osc2.stop(audioCtx.currentTime + 0.14);
-                    }, 60);
-                } else if (type === 'load') {
-                    osc.frequency.value = 400;
-                    osc.type = 'sine';
-                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
-                    osc.start(audioCtx.currentTime);
-                    osc.stop(audioCtx.currentTime + 0.15);
-                    setTimeout(function() {
-                        var osc2 = audioCtx.createOscillator();
-                        var gain2 = audioCtx.createGain();
-                        osc2.connect(gain2);
-                        gain2.connect(audioCtx.destination);
-                        osc2.frequency.value = 800;
-                        osc2.type = 'sine';
-                        gain2.gain.setValueAtTime(0.15, audioCtx.currentTime + 0.1);
-                        gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
-                        osc2.start(audioCtx.currentTime + 0.1);
-                        osc2.stop(audioCtx.currentTime + 0.18);
-                    }, 100);
-                }
-            } catch (_) {}
-        }
-
-        setTimeout(function() { playSound('load'); }, 400);
-
-        var toast = document.getElementById('toast');
-        var toastTimeout;
-
-        function showToast(text) {
-            toast.textContent = text;
-            toast.classList.add('show');
-            clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(function() { toast.classList.remove('show'); }, 2500);
-        }
-
-        var visitorCount = localStorage.getItem('pigeonVisitors');
-        if (!visitorCount) {
-            visitorCount = 294;
-        } else {
-            visitorCount = parseInt(visitorCount) + 1;
-        }
-        localStorage.setItem('pigeonVisitors', visitorCount);
-        document.getElementById('visitorCount').textContent = visitorCount;
-
-        function switchPage(pageId) {
-            playSound('switch');
-            document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
-            var target = document.getElementById('page-' + pageId);
-            if (target) target.classList.add('active');
-
-            document.querySelectorAll('.nav-links a, .bottom-nav a').forEach(function(link) {
-                link.classList.toggle('active', link.dataset.page === pageId);
-            });
-        }
-
-        document.querySelectorAll('.nav-links a, .bottom-nav a').forEach(function(link) {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                var pageId = this.dataset.page;
-                if (pageId) {
-                    switchPage(pageId);
-                }
-            });
+    function showPage(id) {
+        if(document.getElementById(id).classList.contains('active')) return;
+        sndTab();
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.nav-item, .b-nav-item').forEach(n => {
+            n.classList.remove('active');
+            if(n.getAttribute('onclick')?.includes(id) || n.id === 'b-'+id) n.classList.add('active');
         });
+    }
 
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.btn') ||
-                e.target.closest('.team-row') ||
-                e.target.closest('.theme-option')) {
-                playSound('click');
-            }
+    function setTheme(t) {
+        document.body.className = 'theme-' + t;
+        localStorage.setItem('pigeonTheme', t);
+        document.querySelectorAll('.theme-card').forEach(c => {
+            c.classList.remove('active');
+            if(c.getAttribute('onclick').includes(t)) c.classList.add('active');
         });
+        showToast('Тема: ' + t.charAt(0).toUpperCase() + t.slice(1));
+        sndClick();
+    }
 
-        document.getElementById('shareBtn').addEventListener('click', function() {
-            playSound('click');
-            if (navigator.share) {
-                navigator.share({
-                    title: 'PigeonFiles',
-                    text: 'PigeonFiles — архив промтов для нейросетей',
-                    url: window.location.href
-                }).catch(function() {});
-            } else {
-                navigator.clipboard.writeText(window.location.href).then(function() {
-                    showToast('Ссылка скопирована');
-                }).catch(function() {
-                    showToast('Не удалось скопировать');
-                });
-            }
-        });
+    function showToast(txt) {
+        const t = document.getElementById('toast');
+        t.innerText = txt;
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 2500);
+    }
 
-        var savedTheme = localStorage.getItem('pigeonTheme') || 'yellow';
-        applyTheme(savedTheme);
-
-        function applyTheme(theme) {
-            document.body.className = 'theme-' + theme;
-            document.querySelectorAll('.theme-option').forEach(function(opt) {
-                opt.classList.toggle('active', opt.dataset.theme === theme);
-            });
-            localStorage.setItem('pigeonTheme', theme);
-        }
-
-        document.querySelectorAll('.theme-option').forEach(function(opt) {
-            opt.addEventListener('click', function() {
-                var theme = this.dataset.theme;
-                playSound('switch');
-                applyTheme(theme);
-                showToast('Тема: ' + this.querySelector('.label').textContent);
-            });
-        });
-    })();
+    window.onload = () => {
+        initStars();
+        let users = localStorage.getItem('pigeonUsers') || 293;
+        users = parseInt(users) + 1;
+        localStorage.setItem('pigeonUsers', users);
+        document.getElementById('userCount').innerText = users;
+        const saved = localStorage.getItem('pigeonTheme') || 'yellow';
+        setTheme(saved);
+        document.body.addEventListener('click', () => { if(ctx.state === 'suspended') ctx.resume(); }, {once:true});
+        setTimeout(sndLoad, 500);
+    };
 </script>
 </body>
 </html>
