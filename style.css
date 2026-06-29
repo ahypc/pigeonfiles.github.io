@@ -368,4 +368,5 @@ gap: 8px;
 .theme-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
 .theme-card { padding: 10px; gap: 8px; }
 }
-@media (min-width: 641px) { .bottom-nav { display: none; } }
+
+.bottom-nav { display: flex; }
