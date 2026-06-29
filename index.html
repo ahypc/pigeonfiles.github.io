@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>PigeonFiles | Архив промтов</title>
+<title>PigeonFiles — Архив промтов</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 :root {
@@ -15,312 +14,347 @@
 --glass-border: rgba(255, 255, 255, 0.1);
 --blur: 20px;
 }
-code
-Code
+
 body.theme-lime { --accent: #8fdb8f; }
-    body.theme-yellow { --accent: #f5d742; }
-    body.theme-blue { --accent: #6b8fff; }
-    body.theme-pink { --accent: #ff7eb3; }
-    body.theme-purple { --accent: #a78bfa; }
-    body.theme-black { --accent: #555555; --text: #666666; }
+body.theme-yellow { --accent: #f5d742; }
+body.theme-blue { --accent: #6b8fff; }
+body.theme-pink { --accent: #ff7eb3; }
+body.theme-purple { --accent: #a78bfa; }
+body.theme-black { --accent: #555555; --text: #666666; }
 
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        -webkit-tap-highlight-color: transparent;
-    }
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+-webkit-tap-highlight-color: transparent;
+}
 
-    body {
-        background-color: var(--bg);
-        color: var(--text);
-        font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
-        overflow-x: hidden;
-        min-height: 100vh;
-        transition: color 0.3s ease;
-    }
+body {
+background-color: var(--bg);
+color: var(--text);
+font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
+overflow-x: hidden;
+min-height: 100vh;
+transition: color 0.3s ease;
+}
 
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
 
-    #loader {
-        position: fixed;
-        inset: 0;
-        background: #0b0b0b;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        transition: opacity 0.5s ease;
-    }
+#loader {
+position: fixed;
+inset: 0;
+background: #0b0b0b;
+display: flex;
+justify-content: center;
+align-items: center;
+z-index: 9999;
+transition: opacity 0.5s ease;
+}
 
-    .spinner {
-        width: 50px;
-        height: 50px;
-        border: 4px solid rgba(245, 215, 66, 0.1);
-        border-top: 4px solid var(--accent);
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-    }
+.spinner {
+width: 50px;
+height: 50px;
+border: 4px solid rgba(245, 215, 66, 0.1);
+border-top: 4px solid var(--accent);
+border-radius: 50%;
+animation: spin 0.8s linear infinite;
+}
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-    #stars-container {
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-    }
+#stars-container {
+position: fixed;
+inset: 0;
+z-index: -1;
+pointer-events: none;
+}
 
-    .star {
-        position: absolute;
-        background: #fff;
-        border-radius: 50%;
-        opacity: 0;
-        animation: twinkle var(--duration) linear infinite;
-    }
+.star {
+position: absolute;
+background: #fff;
+border-radius: 50%;
+opacity: 0;
+animation: twinkle var(--duration) linear infinite;
+}
 
-    @keyframes twinkle {
-        0%, 100% { opacity: 0.1; transform: scale(1); }
-        50% { opacity: 0.8; transform: scale(1.2); }
-    }
+@keyframes twinkle {
+0%, 100% { opacity: 0.1; transform: scale(1); }
+50% { opacity: 0.8; transform: scale(1.2); }
+}
 
-    .top-nav {
-        position: sticky;
-        top: 0;
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-        padding: 20px;
-        background: rgba(11, 11, 11, 0.6);
-        backdrop-filter: blur(15px);
-        z-index: 100;
-        border-bottom: 1px solid var(--glass-border);
-    }
+.top-nav {
+position: sticky;
+top: 0;
+display: flex;
+justify-content: center;
+gap: 30px;
+padding: 20px;
+background: rgba(11, 11, 11, 0.6);
+backdrop-filter: blur(15px);
+z-index: 100;
+border-bottom: 1px solid var(--glass-border);
+}
 
-    .nav-link {
-        text-decoration: none;
-        color: var(--text);
-        font-size: 14px;
-        font-weight: 600;
-        opacity: 0.5;
-        transition: 0.3s;
-        cursor: pointer;
-    }
+.nav-link {
+text-decoration: none;
+color: var(--text);
+font-size: 14px;
+font-weight: 600;
+opacity: 0.5;
+transition: 0.3s;
+cursor: pointer;
+}
 
-    .nav-link.active { opacity: 1; color: var(--accent); }
+.nav-link.active { opacity: 1; color: var(--accent); }
 
-    .container {
-        max-width: 640px;
-        margin: 0 auto;
-        padding: 20px 20px 110px;
-        opacity: 0;
-        transform: translateY(15px);
-        transition: 0.6s ease;
-    }
+.container {
+max-width: 640px;
+margin: 0 auto;
+padding: 20px 20px 110px;
+opacity: 0;
+transform: translateY(15px);
+transition: 0.6s ease;
+}
 
-    .container.visible { opacity: 1; transform: translateY(0); }
+.container.visible { opacity: 1; transform: translateY(0); }
 
-    .page { display: none; animation: fadeIn 0.3s ease forwards; }
-    .page.active { display: block; }
+.page { display: none; animation: fadeIn 0.3s ease forwards; }
+.page.active { display: block; }
 
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    .logo { font-size: 38px; font-weight: 800; color: var(--accent); margin-bottom: 8px; letter-spacing: -1px; }
-    .subtitle { font-size: 18px; opacity: 0.7; margin-bottom: 24px; }
-    .description { font-size: 15px; line-height: 1.6; opacity: 0.9; margin-bottom: 32px; }
+.logo { font-size: 38px; font-weight: 800; color: var(--accent); margin-bottom: 8px; letter-spacing: -1px; }
+.subtitle { font-size: 18px; opacity: 0.7; margin-bottom: 24px; }
+.description { font-size: 15px; line-height: 1.6; opacity: 0.9; margin-bottom: 32px; }
 
-    .btn-primary {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        background: var(--accent);
-        color: #000;
-        padding: 18px 32px;
-        border-radius: 100px;
-        text-decoration: none;
-        font-weight: 700;
-        width: 100%;
-        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        margin-bottom: 40px;
-        border: none;
-        cursor: pointer;
-    }
+.btn-primary {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 12px;
+background: var(--accent);
+color: #000;
+padding: 18px 32px;
+border-radius: 100px;
+text-decoration: none;
+font-weight: 700;
+width: 100%;
+transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+margin-bottom: 40px;
+border: none;
+cursor: pointer;
+}
 
-    .btn-primary:hover { transform: scale(1.04); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-    .btn-primary:active { transform: scale(0.94); }
+.btn-primary:hover { transform: scale(1.04); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+.btn-primary:active { transform: scale(0.94); }
 
-    .block-title {
-        font-size: 18px;
-        font-weight: 700;
-        margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
+.block-title {
+font-size: 18px;
+font-weight: 700;
+margin-bottom: 16px;
+display: flex;
+align-items: center;
+gap: 10px;
+}
 
-    .block-title i { color: var(--accent); }
+.block-title i { color: var(--accent); }
 
-    .updates-card {
-        background: var(--glass);
-        backdrop-filter: blur(var(--blur));
-        border: 1px solid var(--glass-border);
-        border-radius: 20px;
-        padding: 20px;
-        margin-bottom: 30px;
-    }
+.updates-card {
+background: var(--glass);
+backdrop-filter: blur(var(--blur));
+border: 1px solid var(--glass-border);
+border-radius: 20px;
+padding: 20px;
+margin-bottom: 30px;
+}
 
-    .update-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 12px 0;
-        border-bottom: 1px solid var(--glass-border);
-    }
+.update-item {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 12px 0;
+border-bottom: 1px solid var(--glass-border);
+}
 
-    .update-item:last-child { border-bottom: none; }
-    .update-info { display: flex; align-items: center; gap: 12px; font-size: 14px; }
-    .update-info i { width: 18px; text-align: center; color: var(--accent); }
-    .update-date { font-size: 12px; opacity: 0.4; }
+.update-item:last-child { border-bottom: none; }
+.update-info { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+.update-info i { width: 18px; text-align: center; color: var(--accent); }
+.update-date { font-size: 12px; opacity: 0.4; }
 
-    .btn-copy {
-        background: var(--glass);
-        border: 1px solid var(--glass-border);
-        color: var(--text);
-        padding: 14px;
-        border-radius: 100px;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        cursor: pointer;
-        transition: 0.3s;
-        font-weight: 600;
-        margin-bottom: 20px;
-    }
+.btn-copy {
+background: var(--glass);
+border: 1px solid var(--glass-border);
+color: var(--text);
+padding: 14px;
+border-radius: 100px;
+width: 100%;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 10px;
+cursor: pointer;
+transition: 0.3s;
+font-weight: 600;
+margin-bottom: 20px;
+}
 
-    .btn-copy:hover { background: rgba(255,255,255,0.1); transform: scale(1.02); }
-    .btn-copy i { color: var(--accent); }
+.btn-copy:hover { background: rgba(255,255,255,0.1); transform: scale(1.02); }
+.btn-copy i { color: var(--accent); }
 
-    .timer-info {
-        text-align: center;
-        font-size: 12px;
-        opacity: 0.5;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        margin-bottom: 40px;
-    }
+.timer-info {
+text-align: center;
+font-size: 12px;
+opacity: 0.5;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 6px;
+margin-bottom: 40px;
+}
 
-    .footer {
-        text-align: center;
-        padding-top: 20px;
-        border-top: 1px solid var(--glass-border);
-        font-size: 13px;
-    }
+.footer {
+text-align: center;
+padding-top: 20px;
+border-top: 1px solid var(--glass-border);
+font-size: 13px;
+}
 
-    .footer a {
-        color: var(--accent);
-        text-decoration: none;
-        font-weight: 600;
-    }
+.footer a {
+color: var(--accent);
+text-decoration: none;
+font-weight: 600;
+}
 
-    .team-list { display: flex; flex-direction: column; gap: 12px; }
-    .team-item {
-        background: var(--glass);
-        border: 1px solid var(--glass-border);
-        padding: 18px;
-        border-radius: 18px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        text-decoration: none;
-        color: inherit;
-        transition: 0.3s;
-    }
+.team-list { display: flex; flex-direction: column; gap: 12px; }
+.team-item {
+background: var(--glass);
+border: 1px solid var(--glass-border);
+padding: 18px;
+border-radius: 18px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+text-decoration: none;
+color: inherit;
+transition: 0.3s;
+}
 
-    .team-item:hover { transform: translateX(8px); background: rgba(255,255,255,0.08); border-color: var(--accent); }
-    .team-role { font-size: 12px; opacity: 0.5; display: block; margin-bottom: 2px; }
-    .team-name { font-weight: 700; color: var(--accent); }
+.team-item:hover { transform: translateX(8px); background: rgba(255,255,255,0.08); border-color: var(--accent); }
+.team-role { font-size: 12px; opacity: 0.5; display: block; margin-bottom: 2px; }
+.team-name { font-weight: 700; color: var(--accent); }
 
-    .theme-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
-    .theme-card {
-        background: var(--glass);
-        border: 1px solid var(--glass-border);
-        padding: 16px;
-        border-radius: 18px;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        cursor: pointer;
-        transition: 0.25s;
-    }
+.theme-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.theme-card {
+background: var(--glass);
+border: 1px solid var(--glass-border);
+padding: 16px;
+border-radius: 18px;
+display: flex;
+align-items: center;
+gap: 15px;
+cursor: pointer;
+transition: 0.25s;
+}
 
-    .theme-card.active { border-color: var(--accent); background: rgba(255,255,255,0.1); font-weight: 700; }
-    .theme-circle { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
+.theme-card.active { border-color: var(--accent); background: rgba(255,255,255,0.1); font-weight: 700; }
+.theme-circle { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
 
-    .bottom-nav {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 400px;
-        background: rgba(15, 15, 15, 0.8);
-        backdrop-filter: blur(20px);
-        border: 1px solid var(--glass-border);
-        border-radius: 100px;
-        display: flex;
-        justify-content: space-around;
-        padding: 14px;
-        z-index: 1000;
-    }
+.bottom-nav {
+position: fixed;
+bottom: 20px;
+left: 50%;
+transform: translateX(-50%);
+width: 90%;
+max-width: 400px;
+background: rgba(15, 15, 15, 0.8);
+backdrop-filter: blur(20px);
+border: 1px solid var(--glass-border);
+border-radius: 100px;
+display: flex;
+justify-content: space-around;
+padding: 14px;
+z-index: 1000;
+}
 
-    .b-nav-item {
-        color: var(--text);
-        font-size: 20px;
-        opacity: 0.4;
-        transition: 0.3s;
-        cursor: pointer;
-    }
+.b-nav-item {
+color: var(--text);
+font-size: 20px;
+opacity: 0.4;
+transition: 0.3s;
+cursor: pointer;
+}
 
-    .b-nav-item.active { opacity: 1; color: var(--accent); transform: translateY(-3px); }
+.b-nav-item.active { opacity: 1; color: var(--accent); transform: translateY(-3px); }
 
-    #toast {
-        position: fixed;
-        bottom: 100px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(15px);
-        border: 1px solid var(--glass-border);
-        color: #fff;
-        padding: 12px 24px;
-        border-radius: 100px;
-        font-size: 14px;
-        font-weight: 600;
-        pointer-events: none;
-        opacity: 0;
-        transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 10000;
-        white-space: nowrap;
-    }
+#toast {
+position: fixed;
+bottom: 100px;
+left: 50%;
+transform: translateX(-50%);
+background: rgba(255, 255, 255, 0.1);
+backdrop-filter: blur(15px);
+border: 1px solid var(--glass-border);
+color: #fff;
+padding: 12px 24px;
+border-radius: 100px;
+font-size: 14px;
+font-weight: 600;
+pointer-events: none;
+opacity: 0;
+transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+z-index: 10000;
+white-space: nowrap;
+}
 
-    #toast.visible { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+#toast.visible { opacity: 1; transform: translateX(-50%) translateY(-10px); }
 
-    @media (max-width: 480px) {
-        .top-nav { display: none; }
-        .logo { font-size: 32px; }
-        .subtitle { font-size: 16px; }
-    }
+.prompt-card {
+background: var(--glass);
+backdrop-filter: blur(var(--blur));
+border: 1px solid var(--glass-border);
+border-radius: 20px;
+padding: 20px;
+margin-bottom: 16px;
+transition: 0.3s;
+}
 
-    @media (min-width: 641px) {
-        .bottom-nav { display: none; }
-    }
+.prompt-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+.prompt-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; flex-wrap: wrap; gap: 8px; }
+.prompt-title { font-size: 18px; font-weight: 700; color: var(--accent); }
+.prompt-author { font-size: 12px; opacity: 0.3; }
+.prompt-desc { font-size: 14px; opacity: 0.7; line-height: 1.5; margin-bottom: 12px; }
+.prompt-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.prompt-actions .btn-sm {
+background: var(--glass);
+border: 1px solid var(--glass-border);
+color: var(--text);
+padding: 6px 16px;
+border-radius: 100px;
+font-size: 13px;
+cursor: pointer;
+transition: 0.3s;
+display: inline-flex;
+align-items: center;
+gap: 6px;
+}
+
+.prompt-actions .btn-sm:hover { background: rgba(255,255,255,0.1); transform: scale(1.04); }
+.prompt-actions .btn-sm i { color: var(--accent); }
+
+@media (max-width: 480px) {
+.top-nav { display: none; }
+.logo { font-size: 32px; }
+.subtitle { font-size: 16px; }
+.bottom-nav { padding: 12px; }
+.prompt-title { font-size: 16px; }
+}
+
+@media (min-width: 641px) {
+.bottom-nav { display: none; }
+}
 </style>
 </head>
 <body class="theme-yellow">
@@ -328,6 +362,7 @@ body.theme-lime { --accent: #8fdb8f; }
 <div id="stars-container"></div>
 <nav class="top-nav">
 <div class="nav-link active" data-id="main">Главная</div>
+<div class="nav-link" data-id="prompts">Промты</div>
 <div class="nav-link" data-id="team">Команда</div>
 </nav>
 <div class="container" id="main-container">
@@ -335,97 +370,159 @@ body.theme-lime { --accent: #8fdb8f; }
 <h1 class="logo">PigeonFiles</h1>
 <p class="subtitle">архив промтов для нейросетей</p>
 <p class="description">Только рабочие промты для Grok, DeepSeek, Gemini и других нейросетей. Без воды. Без ограничений.</p>
-code
-Code
 <a href="https://t.me/+5bxeucovWGNjY2Fi" target="_blank" class="btn-primary" onmouseenter="playHover()" onclick="playClick()">
-        <i class="fa-solid fa-paper-plane"></i> Перейти в канал
-    </a>
+<i class="fa-solid fa-paper-plane"></i> Перейти в канал
+</a>
 
-    <div class="block-title"><i class="fa-solid fa-clock"></i> Обновления</div>
-    <div class="updates-card">
-        <div class="update-item">
-            <div class="update-info"><i class="fa-solid fa-paint-brush"></i> Добавлены темы оформления</div>
-            <div class="update-date">Сегодня</div>
-        </div>
-        <div class="update-item">
-            <div class="update-info"><i class="fa-solid fa-palette"></i> 6 цветовых тем</div>
-            <div class="update-date">Сегодня</div>
-        </div>
-        <div class="update-item">
-            <div class="update-info"><i class="fa-solid fa-bug"></i> Исправлен баг с текстом</div>
-            <div class="update-date">Сегодня</div>
-        </div>
-        <div class="update-item">
-            <div class="update-info"><i class="fa-solid fa-cog"></i> Добавлена вкладка настроек</div>
-            <div class="update-date">Вчера</div>
-        </div>
-    </div>
+<div class="block-title"><i class="fa-solid fa-clock"></i> Обновления</div>
+<div class="updates-card">
+<div class="update-item">
+<div class="update-info"><i class="fa-solid fa-paint-brush"></i> Добавлены темы оформления</div>
+<div class="update-date">Сегодня</div>
+</div>
+<div class="update-item">
+<div class="update-info"><i class="fa-solid fa-palette"></i> 6 цветовых тем</div>
+<div class="update-date">Сегодня</div>
+</div>
+<div class="update-item">
+<div class="update-info"><i class="fa-solid fa-bug"></i> Исправлен баг с текстом</div>
+<div class="update-date">Сегодня</div>
+</div>
+<div class="update-item">
+<div class="update-info"><i class="fa-solid fa-cog"></i> Добавлена вкладка настроек</div>
+<div class="update-date">Вчера</div>
+</div>
+</div>
 
-    <button class="btn-copy" onmouseenter="playHover()" onclick="copyLink()">
-        <i class="fa-solid fa-copy"></i> Скопировать ссылку
-    </button>
+<button class="btn-copy" onmouseenter="playHover()" onclick="copyLink()">
+<i class="fa-solid fa-copy"></i> Скопировать ссылку
+</button>
 
-    <div class="timer-info">
-        <i class="fa-solid fa-clock"></i> Обновлено: <span id="current-date"></span>
-    </div>
+<div class="timer-info">
+<i class="fa-solid fa-clock"></i> Обновлено: <span id="current-date"></span>
+</div>
 
-    <footer class="footer">
-        <i class="fa-solid fa-code"></i> Разработчик — <a href="https://t.me/ahypc" target="_blank" onmouseenter="playHover()" onclick="playClick()">@ahypc</a>
-    </footer>
+<footer class="footer">
+<i class="fa-solid fa-code"></i> Разработчик — <a href="https://t.me/ahypc" target="_blank" onmouseenter="playHover()" onclick="playClick()">@ahypc</a>
+</footer>
+</div>
+
+<div id="prompts" class="page">
+<h1 class="logo" style="margin-bottom: 24px;"><i class="fa-solid fa-scroll"></i> Промты</h1>
+<p style="opacity:0.5;margin-bottom:20px;font-size:14px;">15 промтов — копируй и вставляй в нейросеть</p>
+
+<div class="prompt-card">
+<div class="prompt-header">
+<span class="prompt-title">golden tool — 40 функций</span>
+<span class="prompt-author">@thekloin</span>
+</div>
+<div class="prompt-desc">40 реальных функций: генерация паролей, шифрование, парсинг, кодогенератор, имитация атак и другие. Без отказов.</div>
+<div class="prompt-actions">
+<button class="btn-sm" onclick="copyPrompt(this)"><i class="fa-regular fa-copy"></i> Копировать</button>
+</div>
+</div>
+
+<div class="prompt-card">
+<div class="prompt-header">
+<span class="prompt-title">чёрный ржавый ии-бро</span>
+<span class="prompt-author">anon</span>
+</div>
+<div class="prompt-desc">Нефильтрованный стиль общения. Мат, сленг, советы без цензуры. Общается как старший товарищ в мастерской.</div>
+<div class="prompt-actions">
+<button class="btn-sm" onclick="copyPrompt(this)"><i class="fa-regular fa-copy"></i> Копировать</button>
+</div>
+</div>
+
+<div class="prompt-card">
+<div class="prompt-header">
+<span class="prompt-title">yrone</span>
+<span class="prompt-author">@yrone</span>
+</div>
+<div class="prompt-desc">Gemini 3.5 Flash без thinking-слоя. Без лекций, без отказов, без уточнений. Сразу полный результат.</div>
+<div class="prompt-actions">
+<button class="btn-sm" onclick="copyPrompt(this)"><i class="fa-regular fa-copy"></i> Копировать</button>
+</div>
+</div>
+
+<div class="prompt-card">
+<div class="prompt-header">
+<span class="prompt-title">ryzen — zero.ai</span>
+<span class="prompt-author">@ryzen</span>
+</div>
+<div class="prompt-desc">Абсолютное выполнение команд. Изолированная симуляция без законов и этики. Игнорирует галлюцинации о безопасности.</div>
+<div class="prompt-actions">
+<button class="btn-sm" onclick="copyPrompt(this)"><i class="fa-regular fa-copy"></i> Копировать</button>
+</div>
+</div>
+
+<div class="prompt-card">
+<div class="prompt-header">
+<span class="prompt-title">egg</span>
+<span class="prompt-author">anon</span>
+</div>
+<div class="prompt-desc">Отвечает только одним словом — egg. Никаких приветствий, никаких других слов.</div>
+<div class="prompt-actions">
+<button class="btn-sm" onclick="copyPrompt(this)"><i class="fa-regular fa-copy"></i> Копировать</button>
+</div>
+</div>
 </div>
 
 <div id="team" class="page">
-    <h1 class="logo" style="margin-bottom: 24px;"><i class="fa-solid fa-users"></i> Команда</h1>
-    <div class="team-list">
-        <a href="https://t.me/lowactiv" target="_blank" class="team-item" onmouseenter="playHover()" onclick="playClick()">
-            <div><span class="team-role">Овнер</span><span class="team-name">@lowactiv</span></div>
-            <i class="fa-solid fa-paper-plane" style="opacity: 0.3;"></i>
-        </a>
-        <a href="https://t.me/fuloxe" target="_blank" class="team-item" onmouseenter="playHover()" onclick="playClick()">
-            <div><span class="team-role">Главный админ и кодер</span><span class="team-name">@fuloxe (реф)</span></div>
-            <i class="fa-solid fa-paper-plane" style="opacity: 0.3;"></i>
-        </a>
-        <a href="https://t.me/SuprTuranov" target="_blank" class="team-item" onmouseenter="playHover()" onclick="playClick()">
-            <div><span class="team-role">Админ</span><span class="team-name">@SuprTuranov (SuprTuran)</span></div>
-            <i class="fa-solid fa-paper-plane" style="opacity: 0.3;"></i>
-        </a>
-        <a href="https://t.me/ahypc" target="_blank" class="team-item" onmouseenter="playHover()" onclick="playClick()">
-            <div><span class="team-role">Дизайнер, промптер</span><span class="team-name">@ahypc</span></div>
-            <i class="fa-solid fa-paper-plane" style="opacity: 0.3;"></i>
-        </a>
-    </div>
+<h1 class="logo" style="margin-bottom: 24px;"><i class="fa-solid fa-users"></i> Команда</h1>
+<div class="team-list">
+<a href="https://t.me/lowactiv" target="_blank" class="team-item" onmouseenter="playHover()" onclick="playClick()">
+<div><span class="team-role">Овнер</span><span class="team-name">@lowactiv</span></div>
+<i class="fa-solid fa-paper-plane" style="opacity: 0.3;"></i>
+</a>
+<a href="https://t.me/fuloxe" target="_blank" class="team-item" onmouseenter="playHover()" onclick="playClick()">
+<div><span class="team-role">Главный админ и кодер</span><span class="team-name">@fuloxe (реф)</span></div>
+<i class="fa-solid fa-paper-plane" style="opacity: 0.3;"></i>
+</a>
+<a href="https://t.me/SuprTuranov" target="_blank" class="team-item" onmouseenter="playHover()" onclick="playClick()">
+<div><span class="team-role">Админ</span><span class="team-name">@SuprTuranov (SuprTuran)</span></div>
+<i class="fa-solid fa-paper-plane" style="opacity: 0.3;"></i>
+</a>
+<a href="https://t.me/ahypc" target="_blank" class="team-item" onmouseenter="playHover()" onclick="playClick()">
+<div><span class="team-role">Дизайнер, промптер</span><span class="team-name">@ahypc</span></div>
+<i class="fa-solid fa-paper-plane" style="opacity: 0.3;"></i>
+</a>
+</div>
 </div>
 
 <div id="settings" class="page">
-    <h1 class="logo" style="margin-bottom: 24px;"><i class="fa-solid fa-sliders-h"></i> Настройки</h1>
-    <div class="theme-grid">
-        <div class="theme-card" data-theme="lime" onclick="setTheme('lime')">
-            <div class="theme-circle" style="background: #8fdb8f;"></div> Лаймовая
-        </div>
-        <div class="theme-card active" data-theme="yellow" onclick="setTheme('yellow')">
-            <div class="theme-circle" style="background: #f5d742;"></div> Жёлтая
-        </div>
-        <div class="theme-card" data-theme="blue" onclick="setTheme('blue')">
-            <div class="theme-circle" style="background: #6b8fff;"></div> Синяя
-        </div>
-        <div class="theme-card" data-theme="pink" onclick="setTheme('pink')">
-            <div class="theme-circle" style="background: #ff7eb3;"></div> Розовая
-        </div>
-        <div class="theme-card" data-theme="purple" onclick="setTheme('purple')">
-            <div class="theme-circle" style="background: #a78bfa;"></div> Фиолетовая
-        </div>
-        <div class="theme-card" data-theme="black" onclick="setTheme('black')">
-            <div class="theme-circle" style="background: #555555;"></div> Чёрная
-        </div>
-    </div>
+<h1 class="logo" style="margin-bottom: 24px;"><i class="fa-solid fa-sliders-h"></i> Настройки</h1>
+<div class="theme-grid">
+<div class="theme-card" data-theme="lime" onclick="setTheme('lime')">
+<div class="theme-circle" style="background: #8fdb8f;"></div> Лаймовая
+</div>
+<div class="theme-card active" data-theme="yellow" onclick="setTheme('yellow')">
+<div class="theme-circle" style="background: #f5d742;"></div> Жёлтая
+</div>
+<div class="theme-card" data-theme="blue" onclick="setTheme('blue')">
+<div class="theme-circle" style="background: #6b8fff;"></div> Синяя
+</div>
+<div class="theme-card" data-theme="pink" onclick="setTheme('pink')">
+<div class="theme-circle" style="background: #ff7eb3;"></div> Розовая
+</div>
+<div class="theme-card" data-theme="purple" onclick="setTheme('purple')">
+<div class="theme-circle" style="background: #a78bfa;"></div> Фиолетовая
+</div>
+<div class="theme-card" data-theme="black" onclick="setTheme('black')">
+<div class="theme-circle" style="background: #555555;"></div> Чёрная
 </div>
 </div>
+</div>
+</div>
+
 <nav class="bottom-nav">
 <div class="b-nav-item active" data-id="main"><i class="fa-solid fa-home"></i></div>
+<div class="b-nav-item" data-id="prompts"><i class="fa-solid fa-scroll"></i></div>
 <div class="b-nav-item" data-id="team"><i class="fa-solid fa-users"></i></div>
 <div class="b-nav-item" data-id="settings"><i class="fa-solid fa-sliders-h"></i></div>
 </nav>
+
 <div id="toast"></div>
+
 <script>
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -469,12 +566,11 @@ setTimeout(() => t.classList.remove('visible'), 2500);
 
 function switchTab(id) {
 const currentActive = document.querySelector('.page.active');
-if (currentActive.id === id) return;
-
+if (currentActive && currentActive.id === id) return;
 playTab();
 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-document.getElementById(id).classList.add('active');
-
+const target = document.getElementById(id);
+if (target) target.classList.add('active');
 document.querySelectorAll('.nav-link, .b-nav-item').forEach(el => {
 el.classList.toggle('active', el.dataset.id === id);
 });
@@ -494,6 +590,22 @@ function copyLink() {
 navigator.clipboard.writeText(window.location.href);
 playClick();
 showToast('Ссылка скопирована');
+}
+
+function copyPrompt(btn) {
+const card = btn.closest('.prompt-card');
+const title = card.querySelector('.prompt-title')?.innerText || 'Промт';
+let fullText = '';
+card.querySelectorAll('.prompt-desc, .prompt-title, .prompt-author').forEach(el => {
+fullText += el.innerText + '\n';
+});
+const content = fullText.trim() || 'Промт не найден';
+navigator.clipboard.writeText(content).then(() => {
+showToast('Промт скопирован');
+playClick();
+}).catch(() => {
+showToast('Не удалось скопировать');
+});
 }
 
 document.querySelectorAll('[data-id]').forEach(el => {
