@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+                          <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
@@ -92,6 +92,75 @@
             color: inherit;
         }
 
+        .promo {
+            background: rgba(255,255,255,0.01);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .promo h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: inherit;
+        }
+
+        .promo p {
+            font-size: 14px;
+            opacity: 0.5;
+            line-height: 1.6;
+            color: inherit;
+        }
+
+        .promo .btn {
+            margin-top: 12px;
+        }
+
+        .btn {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.04);
+            padding: 8px 24px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .btn:hover {
+            transform: scale(1.04);
+            border-color: currentColor;
+            color: inherit;
+        }
+        .btn:active {
+            transform: scale(0.94);
+        }
+
+        .btn-primary {
+            background: rgba(255,215,0,0.06);
+            border-color: rgba(255,215,0,0.08);
+            color: #f5d742;
+        }
+
+        .btn-primary:hover {
+            background: rgba(255,215,0,0.12);
+            border-color: rgba(255,215,0,0.15);
+        }
+
         .updates {
             background: rgba(255,255,255,0.01);
             border: 1px solid rgba(255,255,255,0.03);
@@ -131,35 +200,6 @@
             font-size: 11px;
             opacity: 0.2;
             color: inherit;
-        }
-
-        .btn {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.04);
-            padding: 6px 16px;
-            border-radius: 100px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: rgba(255,255,255,0.4);
-        }
-
-        .btn svg {
-            width: 14px;
-            height: 14px;
-            fill: currentColor;
-        }
-
-        .btn:hover {
-            transform: scale(1.04);
-            border-color: currentColor;
-            color: inherit;
-        }
-        .btn:active {
-            transform: scale(0.94);
         }
 
         .toast {
@@ -333,20 +373,19 @@
             transform: scale(0.88);
         }
 
-        .empty-state {
+        .footer {
             text-align: center;
-            padding: 80px 20px;
-            background: rgba(255,255,255,0.01);
-            border: 1px dashed rgba(255,255,255,0.02);
-            border-radius: 24px;
+            margin-top: 30px;
+            padding: 16px 0;
+            border-top: 1px solid rgba(255,255,255,0.02);
+            font-size: 12px;
+            opacity: 0.2;
             color: inherit;
         }
 
-        .empty-state p {
-            opacity: 0.2;
-            font-size: 15px;
-            line-height: 1.6;
+        .footer a {
             color: inherit;
+            text-decoration: none;
         }
 
         h2 {
@@ -355,6 +394,8 @@
 
         .theme-lime body { background: #0a1a0a; color: #b0f0b0; }
         .theme-lime .logo { color: #8fdb8f; }
+        .theme-lime .btn-primary { color: #8fdb8f; border-color: rgba(100, 200, 100, 0.08); }
+        .theme-lime .btn-primary:hover { background: rgba(100, 200, 100, 0.12); }
         .theme-lime .updates { border-color: rgba(100, 200, 100, 0.05); }
         .theme-lime .update-item { border-color: rgba(100, 200, 100, 0.03); }
         .theme-lime .btn:hover { color: #8fdb8f; border-color: #8fdb8f; }
@@ -368,6 +409,8 @@
 
         .theme-yellow body { background: #1a1a0a; color: #f0e6b0; }
         .theme-yellow .logo { color: #f5d742; }
+        .theme-yellow .btn-primary { color: #f5d742; border-color: rgba(200, 200, 100, 0.08); }
+        .theme-yellow .btn-primary:hover { background: rgba(200, 200, 100, 0.12); }
         .theme-yellow .updates { border-color: rgba(200, 200, 100, 0.05); }
         .theme-yellow .update-item { border-color: rgba(200, 200, 100, 0.03); }
         .theme-yellow .btn:hover { color: #f5d742; border-color: #f5d742; }
@@ -381,6 +424,8 @@
 
         .theme-blue body { background: #0a0a1a; color: #b0c0f0; }
         .theme-blue .logo { color: #6b8fff; }
+        .theme-blue .btn-primary { color: #6b8fff; border-color: rgba(100, 150, 255, 0.08); }
+        .theme-blue .btn-primary:hover { background: rgba(100, 150, 255, 0.12); }
         .theme-blue .updates { border-color: rgba(100, 150, 255, 0.05); }
         .theme-blue .update-item { border-color: rgba(100, 150, 255, 0.03); }
         .theme-blue .btn:hover { color: #6b8fff; border-color: #6b8fff; }
@@ -394,6 +439,8 @@
 
         .theme-pink body { background: #1a0a12; color: #f0b0d0; }
         .theme-pink .logo { color: #ff7eb3; }
+        .theme-pink .btn-primary { color: #ff7eb3; border-color: rgba(255, 120, 180, 0.08); }
+        .theme-pink .btn-primary:hover { background: rgba(255, 120, 180, 0.12); }
         .theme-pink .updates { border-color: rgba(255, 120, 180, 0.05); }
         .theme-pink .update-item { border-color: rgba(255, 120, 180, 0.03); }
         .theme-pink .btn:hover { color: #ff7eb3; border-color: #ff7eb3; }
@@ -407,6 +454,8 @@
 
         .theme-purple body { background: #0f0a1a; color: #c8b0f0; }
         .theme-purple .logo { color: #a78bfa; }
+        .theme-purple .btn-primary { color: #a78bfa; border-color: rgba(160, 120, 255, 0.08); }
+        .theme-purple .btn-primary:hover { background: rgba(160, 120, 255, 0.12); }
         .theme-purple .updates { border-color: rgba(160, 120, 255, 0.05); }
         .theme-purple .update-item { border-color: rgba(160, 120, 255, 0.03); }
         .theme-purple .btn:hover { color: #a78bfa; border-color: #a78bfa; }
@@ -420,6 +469,8 @@
 
         .theme-black body { background: #000000; color: #666666; }
         .theme-black .logo { color: #cccccc; }
+        .theme-black .btn-primary { color: #cccccc; border-color: rgba(255,255,255,0.04); }
+        .theme-black .btn-primary:hover { background: rgba(255,255,255,0.04); }
         .theme-black .updates { border-color: rgba(255,255,255,0.02); }
         .theme-black .update-item { border-color: rgba(255,255,255,0.01); }
         .theme-black .btn:hover { color: #cccccc; border-color: #cccccc; }
@@ -463,6 +514,18 @@
     </div>
 
     <div id="page-home" class="page active">
+        <div class="promo">
+            <h3>PigeonFiles — архив промтов</h3>
+            <p>
+                Только рабочие промты для Grok, DeepSeek, Gemini и других нейросетей.<br />
+                Без воды. Без ограничений.
+            </p>
+            <a href="https://t.me/ваш_канал" target="_blank" class="btn btn-primary">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13h-2v6l5.25 3.15L17 12.23l-4-2.37V7z"/></svg>
+                Перейти в канал
+            </a>
+        </div>
+
         <div class="updates">
             <div class="updates-title">Обновления</div>
             <div class="update-item">
@@ -481,6 +544,10 @@
                 <span class="label">⚡ Добавлена вкладка настроек</span>
                 <span class="date">Вчера</span>
             </div>
+        </div>
+
+        <div class="footer">
+            Разработчик — <a href="https://t.me/ahypc" target="_blank">@ahypc</a>
         </div>
     </div>
 
@@ -648,8 +715,7 @@
         });
 
         document.addEventListener('click', function(e) {
-            if (e.target.closest('.btn:not(.copy-btn):not(.download-btn)') ||
-                e.target.closest('.filter-btn') ||
+            if (e.target.closest('.btn') ||
                 e.target.closest('.team-row') ||
                 e.target.closest('.theme-option')) {
                 playSound('click');
@@ -678,4 +744,4 @@
     })();
 </script>
 </body>
-    </html>
+</html>
