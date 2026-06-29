@@ -1,402 +1,524 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PigeonFiles | Архив промтов</title>
-    <style>
-        :root {
-            --bg: #0b0b0b;
-            --accent: #f5d742;
-            --text: #ffffff;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --blur: 20px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PigeonFiles | Архив промтов</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+--bg: #0b0b0b;
+--accent: #f5d742;
+--text: #ffffff;
+--glass: rgba(255, 255, 255, 0.05);
+--glass-border: rgba(255, 255, 255, 0.1);
+--blur: 20px;
+}
+code
+Code
+body.theme-lime { --accent: #8fdb8f; }
+    body.theme-yellow { --accent: #f5d742; }
+    body.theme-blue { --accent: #6b8fff; }
+    body.theme-pink { --accent: #ff7eb3; }
+    body.theme-purple { --accent: #a78bfa; }
+    body.theme-black { --accent: #555555; --text: #666666; }
 
-        .theme-lime { --accent: #8fdb8f; }
-        .theme-yellow { --accent: #f5d742; }
-        .theme-blue { --accent: #6b8fff; }
-        .theme-pink { --accent: #ff7eb3; }
-        .theme-purple { --accent: #a78bfa; }
-        .theme-black { --accent: #555555; --text: #666666; }
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
+    body {
+        background-color: var(--bg);
+        color: var(--text);
+        font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
+        overflow-x: hidden;
+        min-height: 100vh;
+        transition: color 0.3s ease;
+    }
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
-            overflow-x: hidden;
-            min-height: 100vh;
-            transition: color 0.3s ease;
-        }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
 
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+    #loader {
+        position: fixed;
+        inset: 0;
+        background: #0b0b0b;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease;
+    }
 
-        #stars {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(245, 215, 66, 0.1);
+        border-top: 4px solid var(--accent);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
 
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle linear infinite;
-        }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.1; }
-            50% { opacity: 0.8; }
-        }
+    #stars-container {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+    }
 
-        .top-nav {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            padding: 20px;
-            position: sticky;
-            top: 0;
-            background: rgba(11,11,11,0.5);
-            backdrop-filter: blur(10px);
-            z-index: 100;
-        }
+    .star {
+        position: absolute;
+        background: #fff;
+        border-radius: 50%;
+        opacity: 0;
+        animation: twinkle var(--duration) linear infinite;
+    }
 
-        .nav-item {
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: 0.3s;
-            opacity: 0.5;
-        }
+    @keyframes twinkle {
+        0%, 100% { opacity: 0.1; transform: scale(1); }
+        50% { opacity: 0.8; transform: scale(1.2); }
+    }
 
-        .nav-item.active { opacity: 1; color: var(--accent); }
+    .top-nav {
+        position: sticky;
+        top: 0;
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        padding: 20px;
+        background: rgba(11, 11, 11, 0.6);
+        backdrop-filter: blur(15px);
+        z-index: 100;
+        border-bottom: 1px solid var(--glass-border);
+    }
 
-        .container {
-            max-width: 640px;
-            margin: 0 auto;
-            padding: 20px 20px 100px;
-        }
+    .nav-link {
+        text-decoration: none;
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 600;
+        opacity: 0.5;
+        transition: 0.3s;
+        cursor: pointer;
+    }
 
-        .page {
-            display: none;
-            animation: fadeIn 0.3s ease forwards;
-        }
+    .nav-link.active { opacity: 1; color: var(--accent); }
 
-        .page.active { display: block; }
+    .container {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 20px 20px 110px;
+        opacity: 0;
+        transform: translateY(15px);
+        transition: 0.6s ease;
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    .container.visible { opacity: 1; transform: translateY(0); }
 
-        h1 { font-size: 38px; font-weight: 800; color: var(--accent); margin-bottom: 5px; }
-        .sub { font-size: 18px; opacity: 0.7; margin-bottom: 20px; }
-        .desc { line-height: 1.6; opacity: 0.9; margin-bottom: 30px; font-size: 15px; }
+    .page { display: none; animation: fadeIn 0.3s ease forwards; }
+    .page.active { display: block; }
 
-        .tg-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background: var(--accent);
-            color: #000;
-            padding: 16px;
-            border-radius: 100px;
-            text-decoration: none;
-            font-weight: 700;
-            transition: 0.3s;
-            margin-bottom: 40px;
-        }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .tg-btn:hover { transform: scale(1.04); }
-        .tg-btn:active { transform: scale(0.94); }
+    .logo { font-size: 38px; font-weight: 800; color: var(--accent); margin-bottom: 8px; letter-spacing: -1px; }
+    .subtitle { font-size: 18px; opacity: 0.7; margin-bottom: 24px; }
+    .description { font-size: 15px; line-height: 1.6; opacity: 0.9; margin-bottom: 32px; }
 
-        .stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 40px;
-        }
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        background: var(--accent);
+        color: #000;
+        padding: 18px 32px;
+        border-radius: 100px;
+        text-decoration: none;
+        font-weight: 700;
+        width: 100%;
+        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-bottom: 40px;
+        border: none;
+        cursor: pointer;
+    }
 
-        .card {
-            background: var(--glass);
-            backdrop-filter: blur(var(--blur));
-            border: 1px solid var(--glass-border);
-            padding: 20px;
-            border-radius: 20px;
-            text-align: center;
-        }
+    .btn-primary:hover { transform: scale(1.04); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+    .btn-primary:active { transform: scale(0.94); }
 
-        .stat-num { display: block; font-size: 28px; font-weight: 800; color: var(--accent); }
-        .stat-label { font-size: 12px; opacity: 0.5; text-transform: uppercase; }
+    .block-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 
-        .update-item {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            padding: 15px 20px;
-            border-radius: 16px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .block-title i { color: var(--accent); }
 
-        .update-item span:last-child { opacity: 0.4; font-size: 12px; }
+    .updates-card {
+        background: var(--glass);
+        backdrop-filter: blur(var(--blur));
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 30px;
+    }
 
-        .team-link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            padding: 18px;
-            border-radius: 16px;
-            margin-bottom: 12px;
-            text-decoration: none;
-            color: inherit;
-            transition: 0.3s;
-        }
+    .update-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--glass-border);
+    }
 
-        .team-link:hover { transform: translateX(10px); background: rgba(255,255,255,0.1); }
-        .team-link b { color: var(--accent); }
+    .update-item:last-child { border-bottom: none; }
+    .update-info { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+    .update-info i { width: 18px; text-align: center; color: var(--accent); }
+    .update-date { font-size: 12px; opacity: 0.4; }
 
-        .theme-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
+    .btn-copy {
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        color: var(--text);
+        padding: 14px;
+        border-radius: 100px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
 
-        .theme-card {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            padding: 15px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+    .btn-copy:hover { background: rgba(255,255,255,0.1); transform: scale(1.02); }
+    .btn-copy i { color: var(--accent); }
 
-        .theme-card.active { border-color: var(--accent); background: rgba(255,255,255,0.1); }
+    .timer-info {
+        text-align: center;
+        font-size: 12px;
+        opacity: 0.5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-bottom: 40px;
+    }
 
-        .color-dot { width: 16px; height: 16px; border-radius: 50%; }
+    .footer {
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid var(--glass-border);
+        font-size: 13px;
+    }
 
-        .bottom-nav {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 400px;
-            background: rgba(20, 20, 20, 0.8);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 100px;
-            display: flex;
-            justify-content: space-around;
-            padding: 15px;
-            z-index: 1000;
-        }
+    .footer a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+    }
 
-        .b-nav-item {
-            cursor: pointer;
-            transition: 0.3s;
-            opacity: 0.4;
-            color: var(--text);
-        }
+    .team-list { display: flex; flex-direction: column; gap: 12px; }
+    .team-item {
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        padding: 18px;
+        border-radius: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-decoration: none;
+        color: inherit;
+        transition: 0.3s;
+    }
 
-        .b-nav-item.active { opacity: 1; color: var(--accent); }
+    .team-item:hover { transform: translateX(8px); background: rgba(255,255,255,0.08); border-color: var(--accent); }
+    .team-role { font-size: 12px; opacity: 0.5; display: block; margin-bottom: 2px; }
+    .team-name { font-weight: 700; color: var(--accent); }
 
-        svg { width: 24px; height: 24px; fill: currentColor; }
+    .theme-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .theme-card {
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        padding: 16px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        cursor: pointer;
+        transition: 0.25s;
+    }
 
-        #toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--accent);
-            color: #000;
-            padding: 10px 24px;
-            border-radius: 100px;
-            font-weight: 700;
-            font-size: 14px;
-            display: none;
-            z-index: 2000;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+    .theme-card.active { border-color: var(--accent); background: rgba(255,255,255,0.1); font-weight: 700; }
+    .theme-circle { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
 
-        footer { text-align: center; padding: 40px 0; font-size: 12px; opacity: 0.4; }
-        footer a { color: inherit; }
+    .bottom-nav {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 400px;
+        background: rgba(15, 15, 15, 0.8);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 100px;
+        display: flex;
+        justify-content: space-around;
+        padding: 14px;
+        z-index: 1000;
+    }
 
-        @media (min-width: 641px) {
-            .bottom-nav { display: none; }
-        }
-        @media (max-width: 640px) {
-            .top-nav { display: none; }
-        }
-    </style>
+    .b-nav-item {
+        color: var(--text);
+        font-size: 20px;
+        opacity: 0.4;
+        transition: 0.3s;
+        cursor: pointer;
+    }
+
+    .b-nav-item.active { opacity: 1; color: var(--accent); transform: translateY(-3px); }
+
+    #toast {
+        position: fixed;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 100px;
+        font-size: 14px;
+        font-weight: 600;
+        pointer-events: none;
+        opacity: 0;
+        transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 10000;
+        white-space: nowrap;
+    }
+
+    #toast.visible { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+
+    @media (max-width: 480px) {
+        .top-nav { display: none; }
+        .logo { font-size: 32px; }
+        .subtitle { font-size: 16px; }
+    }
+
+    @media (min-width: 641px) {
+        .bottom-nav { display: none; }
+    }
+</style>
 </head>
 <body class="theme-yellow">
-
-<div id="stars"></div>
-
+<div id="loader"><div class="spinner"></div></div>
+<div id="stars-container"></div>
 <nav class="top-nav">
-    <div class="nav-item active" onclick="showPage('main')">Главная</div>
-    <div class="nav-item" onclick="showPage('team')">Команда</div>
+<div class="nav-link active" data-id="main">Главная</div>
+<div class="nav-link" data-id="team">Команда</div>
 </nav>
+<div class="container" id="main-container">
+<div id="main" class="page active">
+<h1 class="logo">PigeonFiles</h1>
+<p class="subtitle">архив промтов для нейросетей</p>
+<p class="description">Только рабочие промты для Grok, DeepSeek, Gemini и других нейросетей. Без воды. Без ограничений.</p>
+code
+Code
+<a href="https://t.me/+5bxeucovWGNjY2Fi" target="_blank" class="btn-primary" onmouseenter="playHover()" onclick="playClick()">
+        <i class="fa-solid fa-paper-plane"></i> Перейти в канал
+    </a>
 
-<div class="container">
-    <div id="main" class="page active">
-        <h1>PigeonFiles</h1>
-        <div class="sub">архив промтов для нейросетей</div>
-        <p class="desc">Только рабочие промты для Grok, DeepSeek, Gemini и других нейросетей. Без воды. Без ограничений.</p>
-        
-        <a href="https://t.me/+5bxeucovWGNjY2Fi" class="tg-btn" target="_blank" onclick="sndClick()">
-            <svg viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm4.43 7l-1.43 8.324c-.133.586-.482.729-.972.453l-2.185-1.611-1.054 1.015c-.116.117-.214.214-.439.214l.157-2.223 4.045-3.655c.176-.156-.038-.243-.273-.087l-5.001 3.149-2.155-.674c-.468-.146-.477-.468.098-.694l8.413-3.242c.389-.142.73.09.596.73z"/></svg>
-            Перейти в канал
+    <div class="block-title"><i class="fa-solid fa-clock"></i> Обновления</div>
+    <div class="updates-card">
+        <div class="update-item">
+            <div class="update-info"><i class="fa-solid fa-paint-brush"></i> Добавлены темы оформления</div>
+            <div class="update-date">Сегодня</div>
+        </div>
+        <div class="update-item">
+            <div class="update-info"><i class="fa-solid fa-palette"></i> 6 цветовых тем</div>
+            <div class="update-date">Сегодня</div>
+        </div>
+        <div class="update-item">
+            <div class="update-info"><i class="fa-solid fa-bug"></i> Исправлен баг с текстом</div>
+            <div class="update-date">Сегодня</div>
+        </div>
+        <div class="update-item">
+            <div class="update-info"><i class="fa-solid fa-cog"></i> Добавлена вкладка настроек</div>
+            <div class="update-date">Вчера</div>
+        </div>
+    </div>
+
+    <button class="btn-copy" onmouseenter="playHover()" onclick="copyLink()">
+        <i class="fa-solid fa-copy"></i> Скопировать ссылку
+    </button>
+
+    <div class="timer-info">
+        <i class="fa-solid fa-clock"></i> Обновлено: <span id="current-date"></span>
+    </div>
+
+    <footer class="footer">
+        <i class="fa-solid fa-code"></i> Разработчик — <a href="https://t.me/ahypc" target="_blank" onmouseenter="playHover()" onclick="playClick()">@ahypc</a>
+    </footer>
+</div>
+
+<div id="team" class="page">
+    <h1 class="logo" style="margin-bottom: 24px;"><i class="fa-solid fa-users"></i> Команда</h1>
+    <div class="team-list">
+        <a href="https://t.me/lowactiv" target="_blank" class="team-item" onmouseenter="playHover()" onclick="playClick()">
+            <div><span class="team-role">Овнер</span><span class="team-name">@lowactiv</span></div>
+            <i class="fa-solid fa-paper-plane" style="opacity: 0.3;"></i>
         </a>
-
-        <div class="stats">
-            <div class="card">
-                <span class="stat-num" id="userCount">293</span>
-                <span class="stat-label">Пользователей</span>
-            </div>
-            <div class="card">
-                <span class="stat-num">293</span>
-                <span class="stat-label">Подписчиков</span>
-            </div>
-        </div>
-
-        <h2 style="font-size: 20px; margin-bottom: 15px;">Обновления</h2>
-        <div class="update-item"><span>➕ Добавлены темы оформления</span><span>Сегодня</span></div>
-        <div class="update-item"><span>🎨 6 цветовых тем</span><span>Сегодня</span></div>
-        <div class="update-item"><span>🔧 Исправлен баг с текстом</span><span>Сегодня</span></div>
-        <div class="update-item"><span>⚡ Добавлена вкладка настроек</span><span>Вчера</span></div>
-
-        <footer>Разработчик — <a href="https://t.me/ahypc" target="_blank">@ahypc</a></footer>
-    </div>
-
-    <div id="team" class="page">
-        <h1 style="margin-bottom: 20px;">Команда</h1>
-        <a href="https://t.me/lowactiv" class="team-link" onclick="sndClick()"><span>Овнер</span><b>@lowactiv</b></a>
-        <a href="https://t.me/fuloxe" class="team-link" onclick="sndClick()"><span>Главный админ и кодер</span><b>@fuloxe</b></a>
-        <a href="https://t.me/SuprTuranov" class="team-link" onclick="sndClick()"><span>Админ</span><b>@SuprTuranov</b></a>
-        <a href="https://t.me/ahypc" class="team-link" onclick="sndClick()"><span>Дизайнер, промптер</span><b>@ahypc</b></a>
-    </div>
-
-    <div id="settings" class="page">
-        <h1 style="margin-bottom: 20px;">Настройки</h1>
-        <div class="theme-list">
-            <div class="theme-card" onclick="setTheme('lime')"><div class="color-dot" style="background:#8fdb8f"></div>Лаймовая</div>
-            <div class="theme-card active" onclick="setTheme('yellow')"><div class="color-dot" style="background:#f5d742"></div>Жёлтая</div>
-            <div class="theme-card" onclick="setTheme('blue')"><div class="color-dot" style="background:#6b8fff"></div>Синяя</div>
-            <div class="theme-card" onclick="setTheme('pink')"><div class="color-dot" style="background:#ff7eb3"></div>Розовая</div>
-            <div class="theme-card" onclick="setTheme('purple')"><div class="color-dot" style="background:#a78bfa"></div>Фиолетовая</div>
-            <div class="theme-card" onclick="setTheme('black')"><div class="color-dot" style="background:#555555"></div>Чёрная</div>
-        </div>
+        <a href="https://t.me/fuloxe" target="_blank" class="team-item" onmouseenter="playHover()" onclick="playClick()">
+            <div><span class="team-role">Главный админ и кодер</span><span class="team-name">@fuloxe (реф)</span></div>
+            <i class="fa-solid fa-paper-plane" style="opacity: 0.3;"></i>
+        </a>
+        <a href="https://t.me/SuprTuranov" target="_blank" class="team-item" onmouseenter="playHover()" onclick="playClick()">
+            <div><span class="team-role">Админ</span><span class="team-name">@SuprTuranov (SuprTuran)</span></div>
+            <i class="fa-solid fa-paper-plane" style="opacity: 0.3;"></i>
+        </a>
+        <a href="https://t.me/ahypc" target="_blank" class="team-item" onmouseenter="playHover()" onclick="playClick()">
+            <div><span class="team-role">Дизайнер, промптер</span><span class="team-name">@ahypc</span></div>
+            <i class="fa-solid fa-paper-plane" style="opacity: 0.3;"></i>
+        </a>
     </div>
 </div>
 
+<div id="settings" class="page">
+    <h1 class="logo" style="margin-bottom: 24px;"><i class="fa-solid fa-sliders-h"></i> Настройки</h1>
+    <div class="theme-grid">
+        <div class="theme-card" data-theme="lime" onclick="setTheme('lime')">
+            <div class="theme-circle" style="background: #8fdb8f;"></div> Лаймовая
+        </div>
+        <div class="theme-card active" data-theme="yellow" onclick="setTheme('yellow')">
+            <div class="theme-circle" style="background: #f5d742;"></div> Жёлтая
+        </div>
+        <div class="theme-card" data-theme="blue" onclick="setTheme('blue')">
+            <div class="theme-circle" style="background: #6b8fff;"></div> Синяя
+        </div>
+        <div class="theme-card" data-theme="pink" onclick="setTheme('pink')">
+            <div class="theme-circle" style="background: #ff7eb3;"></div> Розовая
+        </div>
+        <div class="theme-card" data-theme="purple" onclick="setTheme('purple')">
+            <div class="theme-circle" style="background: #a78bfa;"></div> Фиолетовая
+        </div>
+        <div class="theme-card" data-theme="black" onclick="setTheme('black')">
+            <div class="theme-circle" style="background: #555555;"></div> Чёрная
+        </div>
+    </div>
+</div>
+</div>
 <nav class="bottom-nav">
-    <div class="b-nav-item active" id="b-main" onclick="showPage('main')">
-        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-    </div>
-    <div class="b-nav-item" id="b-team" onclick="showPage('team')">
-        <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-    </div>
-    <div class="b-nav-item" id="b-settings" onclick="showPage('settings')">
-        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-    </div>
+<div class="b-nav-item active" data-id="main"><i class="fa-solid fa-home"></i></div>
+<div class="b-nav-item" data-id="team"><i class="fa-solid fa-users"></i></div>
+<div class="b-nav-item" data-id="settings"><i class="fa-solid fa-sliders-h"></i></div>
 </nav>
-
 <div id="toast"></div>
-
 <script>
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    function playTone(freq, dur, vol, del = 0) {
-        const osc = ctx.createOscillator();
-        const g = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, ctx.currentTime + del);
-        g.gain.setValueAtTime(vol, ctx.currentTime + del);
-        g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + del + dur);
-        osc.connect(g); g.connect(ctx.destination);
-        osc.start(ctx.currentTime + del); osc.stop(ctx.currentTime + del + dur);
-    }
-    const sndClick = () => playTone(600, 0.08, 0.25);
-    const sndTab = () => { playTone(500, 0.1, 0.2); playTone(750, 0.1, 0.2, 0.05); };
-    const sndLoad = () => { playTone(400, 0.15, 0.2); playTone(800, 0.15, 0.2, 0.1); };
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    function initStars() {
-        const s = document.getElementById('stars');
-        for(let i=0; i<120; i++) {
-            const div = document.createElement('div');
-            div.className = 'star';
-            const size = Math.random() * 2 + 1;
-            div.style.width = size + 'px';
-            div.style.height = size + 'px';
-            div.style.left = Math.random() * 100 + '%';
-            div.style.top = Math.random() * 100 + '%';
-            div.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            div.style.animationDelay = Math.random() * 5 + 's';
-            s.appendChild(div);
-        }
-    }
+function playFreq(f, d, g, delay = 0) {
+const osc = audioCtx.createOscillator();
+const gain = audioCtx.createGain();
+osc.type = 'sine';
+osc.frequency.setValueAtTime(f, audioCtx.currentTime + delay);
+gain.gain.setValueAtTime(g, audioCtx.currentTime + delay);
+gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + delay + d);
+osc.connect(gain); gain.connect(audioCtx.destination);
+osc.start(audioCtx.currentTime + delay); osc.stop(audioCtx.currentTime + delay + d);
+}
 
-    function showPage(id) {
-        if(document.getElementById(id).classList.contains('active')) return;
-        sndTab();
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.querySelectorAll('.nav-item, .b-nav-item').forEach(n => {
-            n.classList.remove('active');
-            if(n.getAttribute('onclick')?.includes(id) || n.id === 'b-'+id) n.classList.add('active');
-        });
-    }
+const playClick = () => { if(audioCtx.state === 'suspended') audioCtx.resume(); playFreq(600, 0.08, 0.25); };
+const playTab = () => { if(audioCtx.state === 'suspended') audioCtx.resume(); playFreq(500, 0.15, 0.2); playFreq(750, 0.15, 0.2, 0.05); };
+const playLoad = () => { if(audioCtx.state === 'suspended') audioCtx.resume(); playFreq(400, 0.2, 0.2); playFreq(800, 0.2, 0.2, 0.1); };
+const playHover = () => { if(audioCtx.state === 'suspended') audioCtx.resume(); playFreq(900, 0.05, 0.05); };
 
-    function setTheme(t) {
-        document.body.className = 'theme-' + t;
-        localStorage.setItem('pigeonTheme', t);
-        document.querySelectorAll('.theme-card').forEach(c => {
-            c.classList.remove('active');
-            if(c.getAttribute('onclick').includes(t)) c.classList.add('active');
-        });
-        showToast('Тема: ' + t.charAt(0).toUpperCase() + t.slice(1));
-        sndClick();
-    }
+function initStars() {
+const container = document.getElementById('stars-container');
+for (let i = 0; i < 120; i++) {
+const star = document.createElement('div');
+star.className = 'star';
+const size = Math.random() * 2 + 1;
+star.style.width = `${size}px`;
+star.style.height = `${size}px`;
+star.style.left = `${Math.random() * 100}%`;
+star.style.top = `${Math.random() * 100}%`;
+star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+container.appendChild(star);
+}
+}
 
-    function showToast(txt) {
-        const t = document.getElementById('toast');
-        t.innerText = txt;
-        t.style.display = 'block';
-        setTimeout(() => t.style.display = 'none', 2500);
-    }
+function showToast(text) {
+const t = document.getElementById('toast');
+t.innerText = text;
+t.classList.add('visible');
+setTimeout(() => t.classList.remove('visible'), 2500);
+}
 
-    window.onload = () => {
-        initStars();
-        let users = localStorage.getItem('pigeonUsers') || 293;
-        users = parseInt(users) + 1;
-        localStorage.setItem('pigeonUsers', users);
-        document.getElementById('userCount').innerText = users;
-        const saved = localStorage.getItem('pigeonTheme') || 'yellow';
-        setTheme(saved);
-        document.body.addEventListener('click', () => { if(ctx.state === 'suspended') ctx.resume(); }, {once:true});
-        setTimeout(sndLoad, 500);
-    };
+function switchTab(id) {
+const currentActive = document.querySelector('.page.active');
+if (currentActive.id === id) return;
+
+playTab();
+document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+
+document.querySelectorAll('.nav-link, .b-nav-item').forEach(el => {
+el.classList.toggle('active', el.dataset.id === id);
+});
+window.scrollTo(0,0);
+}
+
+function setTheme(t) {
+const names = {lime:'Лаймовая', yellow:'Жёлтая', blue:'Синяя', pink:'Розовая', purple:'Фиолетовая', black:'Чёрная'};
+document.body.className = `theme-${t}`;
+localStorage.setItem('pigeonTheme', t);
+document.querySelectorAll('.theme-card').forEach(c => c.classList.toggle('active', c.dataset.theme === t));
+playClick();
+showToast(`Тема: ${names[t]}`);
+}
+
+function copyLink() {
+navigator.clipboard.writeText(window.location.href);
+playClick();
+showToast('Ссылка скопирована');
+}
+
+document.querySelectorAll('[data-id]').forEach(el => {
+el.addEventListener('click', () => switchTab(el.dataset.id));
+});
+
+window.addEventListener('load', () => {
+initStars();
+document.getElementById('current-date').innerText = new Date().toLocaleDateString();
+
+const savedTheme = localStorage.getItem('pigeonTheme') || 'yellow';
+document.body.className = `theme-${savedTheme}`;
+document.querySelectorAll('.theme-card').forEach(c => c.classList.toggle('active', c.dataset.theme === savedTheme));
+
+setTimeout(() => {
+document.getElementById('loader').style.opacity = '0';
+setTimeout(() => {
+document.getElementById('loader').style.display = 'none';
+document.getElementById('main-container').classList.add('visible');
+playLoad();
+}, 500);
+}, 800);
+});
+
+document.addEventListener('touchstart', () => { if(audioCtx.state === 'suspended') audioCtx.resume(); }, {once: true});
 </script>
 </body>
 </html>
